@@ -21,8 +21,8 @@ export function SecuritySignals({ signals }: SecuritySignalsProps) {
   const items = signals
     ? [
         { label: 'Login/credential form detected', detected: signals.hasLoginForm },
-        { label: 'SSL/TLS encryption', detected: signals.ssl },
-        { label: 'Privacy policy present', detected: signals.hasPrivacyLink },
+        { label: 'SSL/TLS encryption', detected: !signals.ssl },
+        { label: 'Privacy policy missing', detected: !signals.hasPrivacyLink },
         { label: `Third-party scripts (${signals.thirdPartyScriptsCount})`, detected: signals.thirdPartyScriptsCount > 5 },
       ]
     : defaultSignals

@@ -2,7 +2,6 @@ import asyncio
 import base64
 import os
 import tempfile
-from functools import partial
 from urllib.parse import urlparse
 
 from fastapi import FastAPI, HTTPException
@@ -15,7 +14,7 @@ app = FastAPI(title="LinkScout API")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=["http://localhost:5173", "http://localhost:5174", "http://localhost:5175"],
     allow_methods=["*"],
     allow_headers=["*"],
 )

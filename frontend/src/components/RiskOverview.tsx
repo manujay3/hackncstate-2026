@@ -50,21 +50,23 @@ const defaultPrivacyFactors = [
   { label: 'Privacy policy present', impact: 'positive' as const },
 ]
 
-function tierToBadge(tier: string): { label: string; variant: 'green' | 'yellow' | 'red' } {
+const defaultScores = { ssl: 62, domain: 8, content: 12, privacy: 28 }
+
+function tierToBadge(tier: string): { label: string; variant: 'green' | 'accent' | 'red' } {
   switch (tier) {
     case 'LOW': return { label: 'Safe', variant: 'green' }
-    case 'MEDIUM': return { label: 'Suspicious', variant: 'yellow' }
+    case 'MEDIUM': return { label: 'Suspicious', variant: 'accent' }
     case 'HIGH': return { label: 'Dangerous', variant: 'red' }
-    default: return { label: 'Unknown', variant: 'yellow' }
+    default: return { label: 'Unknown', variant: 'accent' }
   }
 }
 
 export function RiskOverview({ score, tier, reasons, signals }: RiskOverviewProps) {
   const hasData = score !== undefined && tier !== undefined
-  const displayScore = score ?? 96
-  const badge = hasData ? tierToBadge(tier!) : { label: 'Suspicious', variant: 'yellow' as const }
 
-  // Build factors from real signals when available
+  const badge = hasData ? tierToBadge(tier!) : { label: 'Dangerous', variant: 'red' as const }
+  const overall = hasData ? score! : Math.round((defaultScores.ssl + defaultScores.domain + defaultScores.content + defaultScores.privacy) / 4)
+
   const sslFactors = signals ? [
     { label: signals.ssl ? 'SSL/TLS enabled' : 'No SSL/TLS', impact: (signals.ssl ? 'positive' : 'negative') as const },
   ] : defaultSslFactors
@@ -80,17 +82,16 @@ export function RiskOverview({ score, tier, reasons, signals }: RiskOverviewProp
 
   const domainFactors = hasData ? [] : defaultDomainFactors
 
-  // Compute sub-scores from signals
-  const sslScore = signals ? (signals.ssl ? 80 : 20) : 76
-  const contentScore = signals ? (signals.hasLoginForm ? 30 : 80) - Math.min(signals.thirdPartyScriptsCount * 3, 30) : 41
-  const privacyScore = signals ? (signals.hasPrivacyLink ? 70 : 30) : 60
-  const domainScore = hasData ? 50 : 24
+  const sslScore = signals ? (signals.ssl ? 80 : 20) : defaultScores.ssl
+  const contentScore = signals ? Math.max((signals.hasLoginForm ? 30 : 80) - Math.min(signals.thirdPartyScriptsCount * 3, 30), 0) : defaultScores.content
+  const privacyScore = signals ? (signals.hasPrivacyLink ? 70 : 30) : defaultScores.privacy
+  const domainScore = hasData ? 50 : defaultScores.domain
 
   const description = hasData && reasons && reasons.length > 0
     ? reasons.join('. ') + '.'
-    : 'This URL triggers multiple redirect hops before landing on a page containing a credential input form. The final domain was registered recently.'
+    : 'This URL triggers multiple redirect hops before landing on a page containing a credential input form. The final domain was registered 12 days ago and mimics a known financial institution.'
 
-  const badges = hasData && reasons
+  const badgeReasons = hasData && reasons
     ? reasons.slice(0, 3)
     : ['Phishing', 'Redirect Chain', 'New Domain']
 
@@ -105,17 +106,17 @@ export function RiskOverview({ score, tier, reasons, signals }: RiskOverviewProp
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div className="flex flex-col items-center sm:items-start sm:flex-row gap-6">
-          <ScoreRing score={displayScore} label="Score" />
+          <ScoreRing score={overall} label="Safety" />
           <div className="flex-1 space-y-3 pt-2">
             <p className="text-sm leading-relaxed text-[#646669]">
               {description}
             </p>
             <div className="flex flex-wrap gap-2">
-              {badges.map((b, i) => (
+              {badgeReasons.map((b, i) => (
                 <Badge
                   key={i}
                   label={typeof b === 'string' ? b : ''}
-                  variant={i === 0 ? 'red' : i === 1 ? 'yellow' : 'neutral'}
+                  variant={i === 0 ? 'red' : i === 1 ? 'accent' : 'neutral'}
                 />
               ))}
             </div>
@@ -125,7 +126,7 @@ export function RiskOverview({ score, tier, reasons, signals }: RiskOverviewProp
         <div className="space-y-4">
           <ScoreBar label="SSL / TLS" score={sslScore} factors={sslFactors} />
           <ScoreBar label="Domain Trust" score={domainScore} factors={domainFactors} />
-          <ScoreBar label="Content Safety" score={Math.max(contentScore, 0)} factors={contentFactors} />
+          <ScoreBar label="Content Safety" score={contentScore} factors={contentFactors} />
           <ScoreBar label="Privacy" score={privacyScore} factors={privacyFactors} />
         </div>
       </div>
