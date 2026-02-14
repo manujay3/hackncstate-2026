@@ -1,5 +1,3 @@
-import { scoreColor } from './ScoreBar'
-
 interface ScoreRingProps {
   score: number
   max?: number
@@ -12,7 +10,7 @@ export function ScoreRing({ score, max = 100, size = 120, label }: ScoreRingProp
   const radius = (size - strokeWidth) / 2
   const circumference = 2 * Math.PI * radius
   const progress = (score / max) * circumference
-  const color = scoreColor(score)
+  const color = score >= 70 ? '#22c55e' : score >= 40 ? '#b4a7d6' : '#ca4754'
 
   return (
     <div className="flex flex-col items-center gap-2">

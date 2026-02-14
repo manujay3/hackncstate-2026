@@ -12,30 +12,12 @@ interface ScoreBarProps {
   factors?: ScoreFactor[]
 }
 
-function scoreColor(score: number): string {
-  if (score >= 80) return '#22c55e'
-  if (score >= 60) return '#4ade80'
-  if (score >= 40) return '#facc15'
-  if (score >= 20) return '#f97316'
-  return '#ca4754'
-}
-
-function scoreBgClass(score: number): string {
-  if (score >= 80) return 'bg-[#22c55e]'
-  if (score >= 60) return 'bg-[#4ade80]'
-  if (score >= 40) return 'bg-[#facc15]'
-  if (score >= 20) return 'bg-[#f97316]'
-  return 'bg-[#ca4754]'
-}
-
-export { scoreColor }
-
 export function ScoreBar({ label, score, max = 100, factors = [] }: ScoreBarProps) {
   const [open, setOpen] = useState(false)
   const contentRef = useRef<HTMLDivElement>(null)
   const [height, setHeight] = useState(0)
   const pct = Math.min((score / max) * 100, 100)
-  const color = scoreBgClass(score)
+  const color = score >= 70 ? 'bg-emerald-500' : score >= 40 ? 'bg-[#b4a7d6]' : 'bg-[#ca4754]'
   const hasFactors = factors.length > 0
 
   useEffect(() => {
@@ -65,7 +47,7 @@ export function ScoreBar({ label, score, max = 100, factors = [] }: ScoreBarProp
               </svg>
             )}
           </div>
-          <span className="text-sm font-semibold" style={{ color: scoreColor(score) }}>{score}</span>
+          <span className="text-sm font-semibold text-[#d1d0c5]">{score}</span>
         </div>
         <div className="h-2 rounded-full bg-[#3a3c3f] overflow-hidden">
           <div className={`h-full rounded-full ${color}`} style={{ width: `${pct}%` }} />

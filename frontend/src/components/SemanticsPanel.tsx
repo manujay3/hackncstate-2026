@@ -10,7 +10,7 @@ const findings = [
 
 const severityStyles = {
   high: 'bg-[#ca4754]/15 text-[#ca4754]',
-  medium: 'bg-[#8b7ab8]/15 text-[#8b7ab8]',
+  medium: 'bg-[#b4a7d6]/15 text-[#b4a7d6]',
   low: 'bg-[#3a3c3f] text-[#646669]',
 }
 
@@ -25,7 +25,7 @@ export function SemanticsPanel() {
           <span className="font-semibold text-[#ca4754]">{highCount}</span> high severity
         </div>
         <div className="text-sm text-[#646669]">
-          <span className="font-semibold text-[#8b7ab8]">{mediumCount}</span> medium severity
+          <span className="font-semibold text-[#b4a7d6]">{mediumCount}</span> medium severity
         </div>
       </div>
       <div className="space-y-4">

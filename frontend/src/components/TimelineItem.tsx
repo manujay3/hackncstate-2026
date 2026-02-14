@@ -6,7 +6,7 @@ interface TimelineItemProps {
 
 export function TimelineItem({ domain, statusCode, isLast = false }: TimelineItemProps) {
   const statusColor = statusCode >= 300 && statusCode < 400
-    ? 'text-[#8b7ab8]'
+    ? 'text-[#b4a7d6]'
     : statusCode >= 200 && statusCode < 300
       ? 'text-emerald-400'
       : 'text-[#ca4754]'
