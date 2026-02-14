@@ -67,16 +67,19 @@ export function ScanPage() {
         }}
       >
         <div className="text-center mb-28">
-          <h1 className="text-3xl font-bold text-[#d1d0c5] tracking-tight mb-3">
-            LinkScout
-          </h1>
+          <div className="flex items-center justify-center gap-1.5 mb-3">
+            <img src="/logo.svg" alt="SafeLink" className="h-10 w-10" />
+            <h1 className="text-3xl font-bold tracking-tight">
+              <span className="text-[#d1d0c5]">Safe</span><span className="text-[#8b7ab8]">Link</span>
+            </h1>
+          </div>
           <p className="text-[#d1d0c5]/70 text-lg font-medium mb-3">
             Not sure if a link is safe? We check it for you — before you click.
           </p>
           <p className="text-[#646669] text-sm leading-relaxed max-w-md mx-auto">
-            We safely open suspicious websites in a secure environment, detect
+            We use <span className="text-[#8b7ab8]">AI</span> to safely open suspicious websites in a secure environment, detect
             scams and tracking, and explain the risks in plain English so you
-            can browse with confidence.
+            can <span className="font-black">browse with confidence</span>.
           </p>
         </div>
       </div>
@@ -106,23 +109,20 @@ export function ScanPage() {
                 borderWidth: '1px',
                 borderStyle: 'solid',
                 borderColor: scanned ? '#3a3c3f' : 'transparent',
-                padding: scanned ? '12px 24px' : '0px 0px',
-                gap: scanned ? '24px' : '0px',
+                padding: scanned ? '8px 16px' : '0px 0px',
+                gap: scanned ? '12px' : '0px',
               }}
             >
               {/* Brand — appears when docked */}
               <div
-                className="shrink-0 overflow-hidden transition-all duration-500 ease-out"
+                className="shrink-0 overflow-hidden transition-all duration-500 ease-out flex items-center"
                 style={{
-                  maxWidth: scanned ? '120px' : '0px',
+                  maxWidth: scanned ? '32px' : '0px',
                   opacity: scanned ? 1 : 0,
-                  paddingLeft: scanned ? '4px' : '0',
                 }}
               >
-                <button onClick={handleReset} className="cursor-pointer">
-                  <span className="text-sm font-semibold text-[#d1d0c5] tracking-tight whitespace-nowrap">
-                    LinkScout
-                  </span>
+                <button onClick={handleReset} className="cursor-pointer flex items-center justify-center">
+                  <img src="/logo.svg" alt="SafeLink" className="h-8 w-8 block" />
                 </button>
               </div>
 
