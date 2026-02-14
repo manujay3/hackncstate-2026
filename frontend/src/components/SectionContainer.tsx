@@ -8,7 +8,7 @@ export function SectionContainer({ title, children, className = '' }: SectionCon
   return (
     <section className={`py-8 ${className}`}>
       {title && (
-        <h2 className="text-sm font-medium uppercase tracking-wider text-neutral-500 mb-4">
+        <h2 className="text-sm font-medium uppercase tracking-wider text-[#646669] mb-4">
           {title}
         </h2>
       )}

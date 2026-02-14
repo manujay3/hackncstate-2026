@@ -9,9 +9,9 @@ const findings = [
 ]
 
 const severityStyles = {
-  high: 'bg-red-900/40 text-red-400',
-  medium: 'bg-amber-900/40 text-amber-400',
-  low: 'bg-neutral-800 text-neutral-400',
+  high: 'bg-[#ca4754]/15 text-[#ca4754]',
+  medium: 'bg-[#b4a7d6]/15 text-[#b4a7d6]',
+  low: 'bg-[#3a3c3f] text-[#646669]',
 }
 
 export function SemanticsPanel() {
@@ -21,11 +21,11 @@ export function SemanticsPanel() {
   return (
     <SectionContainer title="Content Semantics">
       <div className="flex gap-4 mb-6">
-        <div className="text-sm text-neutral-500">
-          <span className="font-semibold text-red-400">{highCount}</span> high severity
+        <div className="text-sm text-[#646669]">
+          <span className="font-semibold text-[#ca4754]">{highCount}</span> high severity
         </div>
-        <div className="text-sm text-neutral-500">
-          <span className="font-semibold text-amber-400">{mediumCount}</span> medium severity
+        <div className="text-sm text-[#646669]">
+          <span className="font-semibold text-[#b4a7d6]">{mediumCount}</span> medium severity
         </div>
       </div>
       <div className="space-y-4">
@@ -35,9 +35,9 @@ export function SemanticsPanel() {
               <span className={`text-[10px] font-semibold uppercase px-1.5 py-0.5 rounded ${severityStyles[f.severity]}`}>
                 {f.severity}
               </span>
-              <span className="text-sm font-mono text-neutral-200">{f.phrase}</span>
+              <span className="text-sm font-mono text-[#d1d0c5]">{f.phrase}</span>
             </div>
-            <p className="text-xs text-neutral-500 pl-14">{f.reason}</p>
+            <p className="text-xs text-[#646669] pl-14">{f.reason}</p>
           </div>
         ))}
       </div>

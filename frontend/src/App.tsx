@@ -18,11 +18,11 @@ const tabs = [
     content: (
       <>
         <RedirectTimeline />
-        <div className="h-px bg-neutral-800" />
+        <div className="h-px bg-[#2c2e31]" />
         <SecuritySignals />
-        <div className="h-px bg-neutral-800" />
+        <div className="h-px bg-[#2c2e31]" />
         <PrivacyAnalytics />
-        <div className="h-px bg-neutral-800" />
+        <div className="h-px bg-[#2c2e31]" />
         <TechnicalDetails />
       </>
     ),
@@ -35,11 +35,11 @@ const tabs = [
 
 export default function App() {
   return (
-    <div className="min-h-screen bg-[#0a0a0a]">
+    <div className="min-h-screen">
       <Header />
       <main className="max-w-[1060px] mx-auto px-6 pt-8 pb-16 space-y-6">
         <RiskOverview />
-        <div className="rounded-2xl border border-neutral-800 bg-neutral-900/60 p-6 sm:p-8">
+        <div className="rounded-2xl border border-[#2c2e31] bg-[#2c2e31]/60 p-6 sm:p-8">
           <Tabs tabs={tabs} />
         </div>
       </main>

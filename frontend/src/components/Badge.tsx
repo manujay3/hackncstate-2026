@@ -4,10 +4,10 @@ interface BadgeProps {
 }
 
 const variantStyles: Record<string, string> = {
-  neutral: 'bg-neutral-800 text-neutral-300',
-  green: 'bg-emerald-900/40 text-emerald-400',
-  yellow: 'bg-amber-900/40 text-amber-400',
-  red: 'bg-red-900/40 text-red-400',
+  neutral: 'bg-[#3a3c3f] text-[#646669]',
+  green: 'bg-emerald-900/30 text-emerald-400',
+  yellow: 'bg-[#b4a7d6]/15 text-[#b4a7d6]',
+  red: 'bg-[#ca4754]/15 text-[#ca4754]',
 }
 
 export function Badge({ label, variant = 'neutral' }: BadgeProps) {

@@ -10,7 +10,7 @@ export function ScoreRing({ score, max = 100, size = 120, label }: ScoreRingProp
   const radius = (size - strokeWidth) / 2
   const circumference = 2 * Math.PI * radius
   const progress = (score / max) * circumference
-  const color = score >= 70 ? '#22c55e' : score >= 40 ? '#eab308' : '#ef4444'
+  const color = score >= 70 ? '#22c55e' : score >= 40 ? '#b4a7d6' : '#ca4754'
 
   return (
     <div className="flex flex-col items-center gap-2">
@@ -21,7 +21,7 @@ export function ScoreRing({ score, max = 100, size = 120, label }: ScoreRingProp
             cy={size / 2}
             r={radius}
             fill="none"
-            stroke="#262626"
+            stroke="#3a3c3f"
             strokeWidth={strokeWidth}
           />
           <circle
@@ -37,10 +37,10 @@ export function ScoreRing({ score, max = 100, size = 120, label }: ScoreRingProp
           />
         </svg>
         <div className="absolute inset-0 flex items-center justify-center">
-          <span className="text-2xl font-bold text-neutral-100">{score}</span>
+          <span className="text-2xl font-bold text-[#d1d0c5]">{score}</span>
         </div>
       </div>
-      <span className="text-xs font-medium text-neutral-500 uppercase tracking-wider">{label}</span>
+      <span className="text-xs font-medium text-[#646669] uppercase tracking-wider">{label}</span>
     </div>
   )
 }

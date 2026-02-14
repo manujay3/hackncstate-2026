@@ -40,9 +40,9 @@ const privacyFactors = [
 
 export function RiskOverview() {
   return (
-    <div className="rounded-2xl border border-neutral-800 bg-neutral-900/60 p-6 sm:p-8">
+    <div className="rounded-2xl border border-[#2c2e31] bg-[#2c2e31]/60 p-6 sm:p-8">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-sm font-medium uppercase tracking-wider text-neutral-500">
+        <h2 className="text-sm font-medium uppercase tracking-wider text-[#646669]">
           Privacy Report
         </h2>
         <Badge label="Suspicious" variant="yellow" />
@@ -52,7 +52,7 @@ export function RiskOverview() {
         <div className="flex flex-col items-center sm:items-start sm:flex-row gap-6">
           <ScoreRing score={96} label="Score" />
           <div className="flex-1 space-y-3 pt-2">
-            <p className="text-sm leading-relaxed text-neutral-400">
+            <p className="text-sm leading-relaxed text-[#646669]">
               This URL triggers multiple redirect hops before landing on a page
               containing a credential input form. The final domain was registered
               recently.

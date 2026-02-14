@@ -16,7 +16,7 @@ export function TechnicalDetails() {
     <SectionContainer>
       <button
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-2 text-sm text-neutral-500 hover:text-neutral-300 transition-colors cursor-pointer"
+        className="flex items-center gap-2 text-sm text-[#646669] hover:text-[#d1d0c5] transition-colors cursor-pointer"
       >
         <svg
           className={`h-3.5 w-3.5 transition-transform ${open ? 'rotate-90' : ''}`}
@@ -33,8 +33,8 @@ export function TechnicalDetails() {
         <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 pl-5">
           {metadata.map((m) => (
             <div key={m.label} className="flex items-baseline gap-2">
-              <span className="text-xs text-neutral-500 shrink-0">{m.label}</span>
-              <span className="text-sm text-neutral-300 font-mono">{m.value}</span>
+              <span className="text-xs text-[#646669] shrink-0">{m.label}</span>
+              <span className="text-sm text-[#d1d0c5] font-mono">{m.value}</span>
             </div>
           ))}
         </div>

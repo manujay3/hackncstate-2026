@@ -14,15 +14,15 @@ export function Tabs({ tabs }: TabsProps) {
 
   return (
     <div>
-      <div className="flex gap-1 border-b border-neutral-800">
+      <div className="flex gap-1 border-b border-[#3a3c3f]">
         {tabs.map((tab, i) => (
           <button
             key={tab.label}
             onClick={() => setActive(i)}
             className={`px-4 py-2.5 text-sm font-medium transition-colors cursor-pointer ${
               active === i
-                ? 'text-neutral-100 border-b-2 border-neutral-100 -mb-px'
-                : 'text-neutral-500 hover:text-neutral-300'
+                ? 'text-[#b4a7d6] border-b-2 border-[#b4a7d6] -mb-px'
+                : 'text-[#646669] hover:text-[#d1d0c5]'
             }`}
           >
             {tab.label}

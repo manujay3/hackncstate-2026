@@ -14,12 +14,12 @@ export function SecuritySignals() {
       <ul className="space-y-3">
         {signals.map((s, i) => (
           <li key={i} className="flex items-center gap-3 text-sm">
-            <span className={`h-1.5 w-1.5 rounded-full ${s.detected ? 'bg-red-400' : 'bg-neutral-700'}`} />
-            <span className={s.detected ? 'text-neutral-200' : 'text-neutral-500'}>
+            <span className={`h-1.5 w-1.5 rounded-full ${s.detected ? 'bg-[#ca4754]' : 'bg-[#3a3c3f]'}`} />
+            <span className={s.detected ? 'text-[#d1d0c5]' : 'text-[#646669]'}>
               {s.label}
             </span>
             {s.detected && (
-              <span className="text-xs text-red-400 font-medium">Detected</span>
+              <span className="text-xs text-[#ca4754] font-medium">Detected</span>
             )}
           </li>
         ))}
