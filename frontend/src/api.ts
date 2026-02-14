@@ -23,6 +23,23 @@ export interface ScanResult {
     tier: "LOW" | "MEDIUM" | "HIGH";
     reasons: string[];
   };
+  whois: {
+    domainName: string;
+    registrar: string;
+    domainAgeYears: number | null;
+    daysSinceLastUpdate: number | null;
+    tld: string;
+    privateRegistration: boolean;
+  } | null;
+  safeBrowsing: {
+    is_flagged: boolean;
+    threat_types: string[];
+  };
+  pageRank: {
+    pageRankDecimal: number | null;
+    pageRankInteger: number | null;
+    rank: string | null;
+  } | null;
 }
 
 export async function previewUrl(url: string): Promise<ScanResult> {

@@ -20,37 +20,63 @@ const icon = (
 
 interface SemanticsPanelProps {
   findings?: SemanticFinding[]
+  privacySnippet?: string | null
+  privacyLink?: string | null
 }
 
-export function SemanticsPanel({ findings }: SemanticsPanelProps) {
-  const hasData = findings && findings.length > 0
+export function SemanticsPanel({ findings, privacySnippet, privacyLink }: SemanticsPanelProps) {
+  const hasFindings = findings && findings.length > 0
+  const hasPrivacy = !!(privacySnippet || privacyLink)
+  const hasData = hasFindings || hasPrivacy
 
   return (
     <SectionContainer title="Privacy Policy" icon={icon}>
       {hasData ? (
-        <>
-          <div className="flex gap-4 mb-6">
-            <div className="text-base text-[#646669]">
-              <span className="font-semibold text-[#ca4754]">{findings.filter(f => f.severity === 'high').length}</span> high severity
+        <div className="space-y-6">
+          {hasPrivacy && (
+            <div>
+              <h3 className="text-sm font-medium text-[#646669] uppercase tracking-wider mb-3">Privacy Policy Summary</h3>
+              <p className="text-base text-[#d1d0c5]/80 leading-relaxed">
+                {privacySnippet ?? 'No privacy policy text could be extracted.'}
+              </p>
+              {privacyLink && (
+                <a
+                  href={privacyLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm text-[#b4a7d6] hover:underline mt-2 inline-block"
+                >
+                  View full policy
+                </a>
+              )}
             </div>
-            <div className="text-base text-[#646669]">
-              <span className="font-semibold text-[#b4a7d6]">{findings.filter(f => f.severity === 'medium').length}</span> medium severity
-            </div>
-          </div>
-          <div className="space-y-4">
-            {findings.map((f, i) => (
-              <div key={i} className="flex flex-col gap-1">
-                <div className="flex items-center gap-2.5">
-                  <span className={`text-xs font-semibold uppercase px-2 py-0.5 rounded ${severityStyles[f.severity]}`}>
-                    {f.severity}
-                  </span>
-                  <span className="text-base font-mono text-[#d1d0c5]">{f.phrase}</span>
+          )}
+          {hasFindings && (
+            <>
+              <div className="flex gap-4 mb-6">
+                <div className="text-base text-[#646669]">
+                  <span className="font-semibold text-[#ca4754]">{findings!.filter(f => f.severity === 'high').length}</span> high severity
                 </div>
-                <p className="text-sm text-[#646669] pl-16">{f.reason}</p>
+                <div className="text-base text-[#646669]">
+                  <span className="font-semibold text-[#b4a7d6]">{findings!.filter(f => f.severity === 'medium').length}</span> medium severity
+                </div>
               </div>
-            ))}
-          </div>
-        </>
+              <div className="space-y-4">
+                {findings!.map((f, i) => (
+                  <div key={i} className="flex flex-col gap-1">
+                    <div className="flex items-center gap-2.5">
+                      <span className={`text-xs font-semibold uppercase px-2 py-0.5 rounded ${severityStyles[f.severity]}`}>
+                        {f.severity}
+                      </span>
+                      <span className="text-base font-mono text-[#d1d0c5]">{f.phrase}</span>
+                    </div>
+                    <p className="text-sm text-[#646669] pl-16">{f.reason}</p>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+        </div>
       ) : (
         <p className="text-base text-[#646669]">N/A</p>
       )}

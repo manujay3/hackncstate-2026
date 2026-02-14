@@ -11,39 +11,17 @@ const icon = (
 interface PrivacyAnalyticsProps {
   thirdPartyScriptsCount?: number
   hasPrivacyLink?: boolean
-  privacySnippet?: string | null
-  privacyLink?: string | null
 }
 
-export function PrivacyAnalytics({ thirdPartyScriptsCount, hasPrivacyLink, privacySnippet, privacyLink }: PrivacyAnalyticsProps) {
+export function PrivacyAnalytics({ thirdPartyScriptsCount, hasPrivacyLink }: PrivacyAnalyticsProps) {
   const hasData = thirdPartyScriptsCount !== undefined
 
   return (
     <SectionContainer title="Tracker & Privacy Analytics" icon={icon}>
       {hasData ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div className="space-y-5">
-            <MetricItem label="Third-party scripts" value={thirdPartyScriptsCount!} />
-            <MetricItem label="Privacy policy" value={hasPrivacyLink ? 'Found' : 'Not found'} />
-          </div>
-          <div className="space-y-4">
-            <div>
-              <h3 className="text-sm font-medium text-[#646669] uppercase tracking-wider mb-3">Privacy Policy Summary</h3>
-              <p className="text-base text-[#646669] leading-relaxed">
-                {privacySnippet ?? 'No privacy policy text could be extracted.'}
-              </p>
-              {privacyLink && (
-                <a
-                  href={privacyLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm text-[#b4a7d6] hover:underline mt-2 inline-block"
-                >
-                  View full policy
-                </a>
-              )}
-            </div>
-          </div>
+        <div className="space-y-5">
+          <MetricItem label="Third-party scripts" value={thirdPartyScriptsCount!} />
+          <MetricItem label="Privacy policy" value={hasPrivacyLink ? 'Found' : 'Not found'} />
         </div>
       ) : (
         <p className="text-base text-[#646669]">N/A</p>

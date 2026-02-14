@@ -1,6 +1,27 @@
+import { useRef, useState, useEffect } from 'react'
 import { Badge } from './Badge'
 import { ScoreRing } from './ScoreRing'
 import { ScoreBar } from './ScoreBar'
+
+interface WhoisData {
+  domainName: string
+  registrar: string
+  domainAgeYears: number | null
+  daysSinceLastUpdate: number | null
+  tld: string
+  privateRegistration: boolean
+}
+
+interface SafeBrowsingData {
+  is_flagged: boolean
+  threat_types: string[]
+}
+
+interface PageRankData {
+  pageRankDecimal: number | null
+  pageRankInteger: number | null
+  rank: string | null
+}
 
 interface RiskOverviewProps {
   score?: number
@@ -12,6 +33,9 @@ interface RiskOverviewProps {
     hasLoginForm: boolean
     thirdPartyScriptsCount: number
   }
+  whois?: WhoisData | null
+  safeBrowsing?: SafeBrowsingData | null
+  pageRank?: PageRankData | null
 }
 
 function tierToBadge(tier: string): { label: string; variant: 'green' | 'accent' | 'red' } {
@@ -23,27 +47,110 @@ function tierToBadge(tier: string): { label: string; variant: 'green' | 'accent'
   }
 }
 
-export function RiskOverview({ score, tier, reasons, signals }: RiskOverviewProps) {
+function formatThreatType(type: string): string {
+  switch (type) {
+    case 'MALWARE': return 'Malware'
+    case 'SOCIAL_ENGINEERING': return 'Social Engineering'
+    case 'UNWANTED_SOFTWARE': return 'Unwanted Software'
+    case 'POTENTIALLY_HARMFUL_APPLICATION': return 'Potentially Harmful Application'
+    default: return type
+  }
+}
+
+function ThreatDropdown({ level, factors }: { level: string | null; factors: { label: string; impact: 'positive' | 'negative' }[] }) {
+  const [open, setOpen] = useState(false)
+  const contentRef = useRef<HTMLDivElement>(null)
+  const [height, setHeight] = useState(0)
+  const hasFactors = factors.length > 0
+
+  useEffect(() => {
+    if (contentRef.current) {
+      setHeight(contentRef.current.scrollHeight)
+    }
+  }, [factors])
+
+  return (
+    <div>
+      <button
+        onClick={() => hasFactors && setOpen(!open)}
+        className={`w-full text-left ${hasFactors ? 'cursor-pointer' : 'cursor-default'}`}
+      >
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className="text-base text-[#d1d0c5]">Threat</span>
+            {hasFactors && (
+              <svg
+                className={`h-3 w-3 text-[#646669] transition-transform duration-200 ease-out ${open ? 'rotate-90' : ''}`}
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+              </svg>
+            )}
+          </div>
+          <span className={`text-base font-semibold ${
+            level === 'LOW' ? 'text-emerald-400' :
+            level === 'HIGH' ? 'text-[#ca4754]' :
+            'text-[#d1d0c5]'
+          }`}>
+            {level ?? 'N/A'}
+          </span>
+        </div>
+      </button>
+
+      <div
+        className="overflow-hidden transition-all duration-300 ease-out"
+        style={{ maxHeight: open ? height : 0, opacity: open ? 1 : 0 }}
+      >
+        <ul ref={contentRef} className="pt-3 pl-1 space-y-2">
+          {factors.map((f, i) => (
+            <li key={i} className="flex items-center gap-2.5">
+              <span className={`h-1.5 w-1.5 rounded-full shrink-0 ${
+                f.impact === 'positive' ? 'bg-emerald-400' : 'bg-[#ca4754]'
+              }`} />
+              <span className="text-sm text-[#646669]">{f.label}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  )
+}
+
+export function RiskOverview({ score, tier, reasons, signals, whois, safeBrowsing, pageRank }: RiskOverviewProps) {
   const hasData = score !== undefined && tier !== undefined
 
   const badge = hasData ? tierToBadge(tier!) : null
   const overall = hasData ? score! : undefined
 
-  const sslFactors = signals ? [
-    { label: signals.ssl ? 'SSL/TLS enabled' : 'No SSL/TLS', impact: (signals.ssl ? 'positive' : 'negative') as const },
-  ] : []
+  const credibilityScore = pageRank?.pageRankDecimal ?? null
 
-  const contentFactors = signals ? [
-    { label: signals.hasLoginForm ? 'Login form detected' : 'No login form', impact: (signals.hasLoginForm ? 'negative' : 'positive') as const },
-    { label: `${signals.thirdPartyScriptsCount} third-party scripts`, impact: (signals.thirdPartyScriptsCount > 5 ? 'negative' : 'neutral') as const },
+  const threatFactors = safeBrowsing ? [
+    {
+      label: safeBrowsing.is_flagged
+        ? `Warning: Google has flagged this website for ${safeBrowsing.threat_types.map(formatThreatType).join(', ')}. We strongly recommend avoiding this site.`
+        : "This website is not listed in Google's malware or phishing database.",
+      impact: (safeBrowsing.is_flagged ? 'negative' : 'positive') as const,
+    },
   ] : []
 
   const privacyFactors = signals ? [
     { label: signals.hasPrivacyLink ? 'Privacy policy found' : 'No privacy policy', impact: (signals.hasPrivacyLink ? 'positive' : 'negative') as const },
   ] : []
 
-  const sslScore = signals ? (signals.ssl ? 80 : 20) : undefined
-  const contentScore = signals ? Math.max((signals.hasLoginForm ? 30 : 80) - Math.min(signals.thirdPartyScriptsCount * 3, 30), 0) : undefined
+  const domainFactors: { label: string; impact: 'positive' | 'negative' | 'neutral' }[] = whois ? [
+    { label: `Website: ${whois.domainName}`, impact: 'neutral' },
+    { label: `Domain Age: ${whois.domainAgeYears != null ? `${whois.domainAgeYears} years` : 'Unknown'}`, impact: whois.domainAgeYears != null && whois.domainAgeYears >= 2 ? 'positive' : whois.domainAgeYears != null && whois.domainAgeYears < 1 ? 'negative' : 'neutral' },
+    { label: `Last Updated: ${whois.daysSinceLastUpdate != null ? `${whois.daysSinceLastUpdate} days ago` : 'Unknown'}`, impact: 'neutral' },
+    { label: `Registrar: ${whois.registrar}`, impact: 'neutral' },
+    { label: `Private Registration: ${whois.privateRegistration ? 'Yes' : 'No'}`, impact: whois.privateRegistration ? 'negative' : 'positive' },
+  ] : []
+
+  const threatLevel = safeBrowsing
+    ? (safeBrowsing.is_flagged ? 'HIGH' : 'LOW')
+    : null
   const privacyScore = signals ? (signals.hasPrivacyLink ? 70 : 30) : undefined
   const domainScore = hasData ? 50 : undefined
 
@@ -93,9 +200,14 @@ export function RiskOverview({ score, tier, reasons, signals }: RiskOverviewProp
         </div>
 
         <div className="space-y-4">
-          <ScoreBar label="SSL / TLS" score={sslScore} factors={sslFactors} />
-          <ScoreBar label="Domain Trust" score={domainScore} factors={[]} />
-          <ScoreBar label="Content Safety" score={contentScore} factors={contentFactors} />
+          <div className="flex items-center justify-between">
+            <span className="text-base text-[#d1d0c5]">Credibility</span>
+            <span className="text-base font-semibold text-[#d1d0c5]">
+              {credibilityScore != null ? credibilityScore : 'N/A'}
+            </span>
+          </div>
+          <ScoreBar label="Domain Trust" score={domainScore} factors={domainFactors} />
+          <ThreatDropdown level={threatLevel} factors={threatFactors} />
           <ScoreBar label="Privacy" score={privacyScore} factors={privacyFactors} />
         </div>
       </div>

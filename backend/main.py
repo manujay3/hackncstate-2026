@@ -2,13 +2,18 @@ import asyncio
 import base64
 import os
 import tempfile
+from datetime import datetime
 from urllib.parse import urlparse
 
+import requests
+from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 from agent import analyze_url
+
+load_dotenv()
 
 app = FastAPI(title="LinkScout API")
 
@@ -27,6 +32,142 @@ class PreviewRequest(BaseModel):
 @app.get("/health")
 def health():
     return {"ok": True}
+
+
+def fetch_whois(domain: str) -> dict | None:
+    """Call the WhoisXML API and return the raw JSON, or None on failure."""
+    api_key = os.environ.get("WHOIS_API_KEY", "")
+    if not api_key:
+        return None
+    try:
+        resp = requests.get(
+            "https://www.whoisxmlapi.com/whoisserver/WhoisService",
+            params={"apiKey": api_key, "domainName": domain, "outputFormat": "JSON"},
+            timeout=10,
+        )
+        resp.raise_for_status()
+        return resp.json()
+    except Exception:
+        return None
+
+
+def extract_whois_relevant_data(whois_json: dict) -> dict | None:
+    """Extract user-friendly fields from a WhoisXML API response."""
+    record = whois_json.get("WhoisRecord")
+    if not record:
+        return None
+
+    domain_name = record.get("domainName", "")
+    registrar = record.get("registrarName", "Unknown")
+
+    # Domain age
+    created = record.get("createdDate") or record.get("registryData", {}).get("createdDate")
+    domain_age_years = None
+    if created:
+        try:
+            created_dt = datetime.fromisoformat(created.replace("Z", "+00:00"))
+            domain_age_years = round((datetime.now(created_dt.tzinfo) - created_dt).days / 365.25, 1)
+        except Exception:
+            pass
+
+    # Days since last update
+    updated = record.get("updatedDate") or record.get("registryData", {}).get("updatedDate")
+    days_since_update = None
+    if updated:
+        try:
+            updated_dt = datetime.fromisoformat(updated.replace("Z", "+00:00"))
+            days_since_update = (datetime.now(updated_dt.tzinfo) - updated_dt).days
+        except Exception:
+            pass
+
+    # TLD
+    tld = domain_name.rsplit(".", 1)[-1] if "." in domain_name else ""
+
+    # Private registration
+    registrant = record.get("registrant", {})
+    contact_email = record.get("contactEmail", "")
+    private_registration = any([
+        "privacy" in (registrant.get("organization", "") or "").lower(),
+        "proxy" in (registrant.get("organization", "") or "").lower(),
+        "redacted" in (registrant.get("name", "") or "").lower(),
+        "redacted" in contact_email.lower(),
+        "privacy" in contact_email.lower(),
+    ])
+
+    return {
+        "domainName": domain_name,
+        "registrar": registrar,
+        "domainAgeYears": domain_age_years,
+        "daysSinceLastUpdate": days_since_update,
+        "tld": tld,
+        "privateRegistration": private_registration,
+    }
+
+
+def fetch_pagerank(domain: str) -> dict | None:
+    """Call the Open PageRank API and return rank data, or None on failure."""
+    api_key = os.environ.get("OPEN_PAGERANK_KEY", "")
+    if not api_key:
+        return None
+    try:
+        resp = requests.get(
+            "https://openpagerank.com/api/v1.0/getPageRank",
+            params={"domains[]": domain},
+            headers={"API-OPR": api_key},
+            timeout=10,
+        )
+        resp.raise_for_status()
+        data = resp.json()
+        results = data.get("response", [])
+        if not results:
+            return None
+        entry = results[0]
+        return {
+            "pageRankDecimal": entry.get("page_rank_decimal"),
+            "pageRankInteger": entry.get("page_rank_integer"),
+            "rank": entry.get("rank"),
+        }
+    except Exception:
+        return None
+
+
+def fetch_safe_browsing(url: str) -> dict:
+    """Call the Google Safe Browsing Lookup API v4 and return extracted data."""
+    api_key = os.environ.get("GOOGLE_SAFE_BROWSING_KEY", "")
+    if not api_key:
+        return {"is_flagged": False, "threat_types": []}
+    try:
+        resp = requests.post(
+            f"https://safebrowsing.googleapis.com/v4/threatMatches:find?key={api_key}",
+            json={
+                "client": {"clientId": "safelink", "clientVersion": "1.0"},
+                "threatInfo": {
+                    "threatTypes": [
+                        "MALWARE",
+                        "SOCIAL_ENGINEERING",
+                        "UNWANTED_SOFTWARE",
+                        "POTENTIALLY_HARMFUL_APPLICATION",
+                    ],
+                    "platformTypes": ["ANY_PLATFORM"],
+                    "threatEntryTypes": ["URL"],
+                    "threatEntries": [{"url": url}],
+                },
+            },
+            timeout=10,
+        )
+        resp.raise_for_status()
+        return extract_safe_browsing_data(resp.json())
+    except Exception:
+        return {"is_flagged": False, "threat_types": []}
+
+
+def extract_safe_browsing_data(response_json: dict) -> dict:
+    """Extract threat info from a Google Safe Browsing API response."""
+    matches = response_json.get("matches", [])
+    if not matches:
+        return {"is_flagged": False, "threat_types": []}
+    threat_types = list(set(match["threatType"] for match in matches))
+    return {"is_flagged": True, "threat_types": threat_types}
 
 
 def compute_risk(agent_data: dict, url: str) -> dict:
@@ -164,6 +305,27 @@ async def preview(req: PreviewRequest):
 
     risk = compute_risk(data, url)
 
+    # WHOIS lookup
+    whois_data = None
+    try:
+        whois_domain = final_domain.removeprefix("www.")
+        raw_whois = fetch_whois(whois_domain)
+        if raw_whois:
+            whois_data = extract_whois_relevant_data(raw_whois)
+    except Exception:
+        pass
+
+    # OpenPageRank lookup
+    pagerank_data = None
+    try:
+        pr_domain = final_domain.removeprefix("www.")
+        pagerank_data = fetch_pagerank(pr_domain)
+    except Exception:
+        pass
+
+    # Google Safe Browsing lookup
+    safe_browsing = fetch_safe_browsing(final_url)
+
     return {
         "ok": True,
         "finalUrl": final_url,
@@ -183,4 +345,7 @@ async def preview(req: PreviewRequest):
         },
         "scripts": scripts[:20],
         "risk": risk,
+        "whois": whois_data,
+        "safeBrowsing": safe_browsing,
+        "pageRank": pagerank_data,
     }

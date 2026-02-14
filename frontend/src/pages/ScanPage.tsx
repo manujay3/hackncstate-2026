@@ -95,8 +95,6 @@ export function ScanPage() {
           <PrivacyAnalytics
             thirdPartyScriptsCount={scanResult?.signals.thirdPartyScriptsCount}
             hasPrivacyLink={scanResult?.signals.hasPrivacyLink}
-            privacySnippet={scanResult?.privacy.snippet}
-            privacyLink={scanResult?.privacy.link}
           />
           <div className="h-px bg-[#2c2e31]" />
           <TechnicalDetails
@@ -111,7 +109,16 @@ export function ScanPage() {
         </>
       ),
     },
-    { label: 'Privacy Policy', icon: privacyPolicyIcon, content: <SemanticsPanel /> },
+    {
+      label: 'Privacy Policy',
+      icon: privacyPolicyIcon,
+      content: (
+        <SemanticsPanel
+          privacySnippet={scanResult?.privacy.snippet}
+          privacyLink={scanResult?.privacy.link}
+        />
+      ),
+    },
   ]
 
   return (
@@ -221,6 +228,9 @@ export function ScanPage() {
                 tier={scanResult?.risk.tier}
                 reasons={scanResult?.risk.reasons}
                 signals={scanResult?.signals}
+                whois={scanResult?.whois}
+                safeBrowsing={scanResult?.safeBrowsing}
+                pageRank={scanResult?.pageRank}
               />
               <div className="rounded-2xl border border-[#2c2e31] bg-[#2c2e31]/60 p-6 sm:p-8">
                 <Tabs tabs={tabs} />
