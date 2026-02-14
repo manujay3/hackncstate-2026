@@ -1,0 +1,27 @@
+{
+  "final_url": "string",
+  "redirects": ["string"],
+  "html": "string",
+  "screenshot_path": "string",
+  "downloads": ["string"]
+}
+
+
+{
+  "risk_score": 0,
+  "label": "Safe | Suspicious | Dangerous",
+  "flags": ["Login Form", "Brand Spoofing"]
+}
+
+
+{
+  "job_id": "string",
+  "result": {
+    "score": 0,
+    "label": "Dangerous",
+    "flags": [],
+    "explanation": "string",
+    "screenshot_url": "string"
+  }
+}
+
