@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useSearchParams, Link } from 'react-router-dom'
+import { useSearchParams } from 'react-router-dom'
 import { UrlInput } from '../components/UrlInput'
 import { RiskOverview } from '../components/RiskOverview'
 import { Tabs } from '../components/Tabs'
@@ -9,25 +9,7 @@ import { SecuritySignals } from '../components/SecuritySignals'
 import { PrivacyAnalytics } from '../components/PrivacyAnalytics'
 import { TechnicalDetails } from '../components/TechnicalDetails'
 import { SemanticsPanel } from '../components/SemanticsPanel'
-
-const tabs = [
-  { label: 'Snapshot', content: <ScreenshotPanel /> },
-  {
-    label: 'Analytics',
-    content: (
-      <>
-        <RedirectTimeline />
-        <div className="h-px bg-[#2c2e31]" />
-        <SecuritySignals />
-        <div className="h-px bg-[#2c2e31]" />
-        <PrivacyAnalytics />
-        <div className="h-px bg-[#2c2e31]" />
-        <TechnicalDetails />
-      </>
-    ),
-  },
-  { label: 'Semantics', content: <SemanticsPanel /> },
-]
+import { previewUrl, type ScanResult } from '../api'
 
 export function ScanPage() {
   const [searchParams, setSearchParams] = useSearchParams()
@@ -36,10 +18,26 @@ export function ScanPage() {
   const [showResults, setShowResults] = useState(!!initialUrl)
   const [scannedUrl, setScannedUrl] = useState(initialUrl)
 
-  const handleScan = (url: string) => {
+  const [scanResult, setScanResult] = useState<ScanResult | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  const handleScan = async (url: string) => {
     setScannedUrl(url)
     setSearchParams({ url })
     setScanned(true)
+    setLoading(true)
+    setError(null)
+    setScanResult(null)
+
+    try {
+      const result = await previewUrl(url)
+      setScanResult(result)
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Scan failed')
+    } finally {
+      setLoading(false)
+    }
   }
 
   useEffect(() => {
@@ -53,8 +51,45 @@ export function ScanPage() {
     setScanned(false)
     setShowResults(false)
     setScannedUrl('')
+    setScanResult(null)
+    setError(null)
     setSearchParams({})
   }
+
+  const tabs = [
+    {
+      label: 'Snapshot',
+      content: <ScreenshotPanel screenshotBase64={scanResult?.screenshotBase64} />,
+    },
+    {
+      label: 'Analytics',
+      content: (
+        <>
+          <RedirectTimeline redirects={scanResult?.redirects} />
+          <div className="h-px bg-[#2c2e31]" />
+          <SecuritySignals signals={scanResult?.signals} />
+          <div className="h-px bg-[#2c2e31]" />
+          <PrivacyAnalytics
+            thirdPartyScriptsCount={scanResult?.signals.thirdPartyScriptsCount}
+            hasPrivacyLink={scanResult?.signals.hasPrivacyLink}
+            privacySnippet={scanResult?.privacy.snippet}
+            privacyLink={scanResult?.privacy.link}
+          />
+          <div className="h-px bg-[#2c2e31]" />
+          <TechnicalDetails
+            metadata={scanResult ? [
+              { label: 'Final URL', value: scanResult.finalUrl },
+              { label: 'SSL', value: scanResult.signals.ssl ? 'Yes' : 'No' },
+              { label: 'Redirects', value: String(scanResult.redirectCount) },
+              { label: 'Third-party Scripts', value: String(scanResult.signals.thirdPartyScriptsCount) },
+              { label: 'Privacy Policy', value: scanResult.signals.hasPrivacyLink ? 'Found' : 'Not found' },
+            ] : undefined}
+          />
+        </>
+      ),
+    },
+    { label: 'Semantics', content: <SemanticsPanel /> },
+  ]
 
   return (
     <div className="min-h-screen relative">
@@ -146,7 +181,22 @@ export function ScanPage() {
             transform: showResults ? 'translateY(0)' : 'translateY(24px)',
           }}
         >
-          <RiskOverview />
+          {error && (
+            <div className="rounded-2xl border border-[#ca4754]/30 bg-[#ca4754]/10 p-4 text-sm text-[#ca4754]">
+              {error}
+            </div>
+          )}
+          {loading && (
+            <div className="rounded-2xl border border-[#2c2e31] bg-[#2c2e31]/60 p-8 text-center">
+              <p className="text-sm text-[#646669] animate-pulse">Scanning URL… this may take a few seconds</p>
+            </div>
+          )}
+          <RiskOverview
+            score={scanResult?.risk.score}
+            tier={scanResult?.risk.tier}
+            reasons={scanResult?.risk.reasons}
+            signals={scanResult?.signals}
+          />
           <div className="rounded-2xl border border-[#2c2e31] bg-[#2c2e31]/60 p-6 sm:p-8">
             <Tabs tabs={tabs} />
           </div>

@@ -57,7 +57,7 @@ def get_privacy_policy_text(context, base_url, original_page_content):
             if not best_link.startswith("http"):
                 best_link = urljoin(base_url, best_link)
 
-            print(f"Privacy Link Candidate: {best_link}")
+            print(f"\U0001f3af Privacy Link Candidate: {best_link}")
             result["link"] = best_link
 
             # Open in a NEW page (tab) to grab the text
@@ -78,7 +78,7 @@ def get_privacy_policy_text(context, base_url, original_page_content):
             finally:
                 policy_page.close()
         else:
-            print("No valid Privacy Policy link found.")
+            print("\u274c No valid Privacy Policy link found.")
 
     except Exception as e:
         print(f"Error extracting privacy policy: {e}")
@@ -138,3 +138,37 @@ def analyze_url(url, screenshot_path="screenshot.png"):
         "scripts": scripts,
         "privacy_policy": privacy_data
     }
+
+# --- Main ---
+if __name__ == "__main__":
+    target_url = input("Enter a URL to analyze: ")
+    if not target_url.startswith("http"):
+        target_url = "https://" + target_url
+
+    job_id = str(uuid.uuid4())
+    print(f"Starting analysis on {target_url}...")
+
+    # Step 1: Run Analysis
+    data = analyze_url(target_url)
+
+    if data:
+        # Step 2: Structure Final JSON
+        job_json = {
+            "job_id": job_id,
+            "status": "success",
+            "result": {
+                "explanation": "Agent scan completed. Ready for Risk Engine.",
+                "screenshot_url": data["screenshot_path"]
+            },
+            "agent_data": data # Contains HTML, Privacy Text, Scripts, etc.
+        }
+
+        # Step 3: Save
+        output_file = "job_output.json"
+        with open(output_file, "w") as f:
+            json.dump(job_json, f, indent=4)
+
+        print(f"Success! Data saved to {output_file}")
+        print(f"Privacy Policy Found: {data['privacy_policy']['link']}")
+    else:
+        print("Analysis failed.")

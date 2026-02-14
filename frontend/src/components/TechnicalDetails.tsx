@@ -1,7 +1,11 @@
 import { useState } from 'react'
 import { SectionContainer } from './SectionContainer'
 
-const metadata = [
+interface TechnicalDetailsProps {
+  metadata?: { label: string; value: string }[]
+}
+
+const defaultMetadata = [
   { label: 'IP Address', value: '104.21.45.32' },
   { label: 'ASN', value: 'AS13335 — Cloudflare, Inc.' },
   { label: 'TLS', value: 'TLS 1.3 — Valid certificate' },
@@ -9,8 +13,9 @@ const metadata = [
   { label: 'Hosting', value: 'Cloudflare Pages' },
 ]
 
-export function TechnicalDetails() {
+export function TechnicalDetails({ metadata }: TechnicalDetailsProps) {
   const [open, setOpen] = useState(false)
+  const items = metadata ?? defaultMetadata
 
   return (
     <SectionContainer>
@@ -31,7 +36,7 @@ export function TechnicalDetails() {
       </button>
       {open && (
         <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 pl-5">
-          {metadata.map((m) => (
+          {items.map((m) => (
             <div key={m.label} className="flex items-baseline gap-2">
               <span className="text-xs text-[#646669] shrink-0">{m.label}</span>
               <span className="text-sm text-[#d1d0c5] font-mono">{m.value}</span>
