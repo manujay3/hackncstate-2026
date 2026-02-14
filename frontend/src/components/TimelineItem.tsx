@@ -14,12 +14,12 @@ export function TimelineItem({ domain, statusCode, isLast = false }: TimelineIte
   return (
     <div className="flex items-start gap-4">
       <div className="flex flex-col items-center">
-        <div className="h-2.5 w-2.5 rounded-full bg-[#646669] mt-1.5" />
+        <div className="h-3 w-3 rounded-full bg-[#646669] mt-1.5" />
         {!isLast && <div className="w-px h-10 bg-[#3a3c3f]" />}
       </div>
       <div className="flex items-center gap-3 pb-6">
-        <span className="text-sm text-[#d1d0c5] font-medium">{domain}</span>
-        <span className={`text-xs font-mono font-medium ${statusColor}`}>{statusCode}</span>
+        <span className="text-base text-[#d1d0c5] font-medium">{domain}</span>
+        <span className={`text-sm font-mono font-medium ${statusColor}`}>{statusCode}</span>
       </div>
     </div>
   )

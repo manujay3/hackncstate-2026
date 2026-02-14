@@ -7,7 +7,7 @@ interface ScoreFactor {
 
 interface ScoreBarProps {
   label: string
-  score: number
+  score?: number
   max?: number
   factors?: ScoreFactor[]
 }
@@ -16,8 +16,9 @@ export function ScoreBar({ label, score, max = 100, factors = [] }: ScoreBarProp
   const [open, setOpen] = useState(false)
   const contentRef = useRef<HTMLDivElement>(null)
   const [height, setHeight] = useState(0)
-  const pct = Math.min((score / max) * 100, 100)
-  const color = score >= 70 ? 'bg-emerald-500' : score >= 40 ? 'bg-[#b4a7d6]' : 'bg-[#ca4754]'
+  const hasScore = score != null
+  const pct = hasScore ? Math.min((score / max) * 100, 100) : 0
+  const color = !hasScore ? 'bg-[#3a3c3f]' : score >= 70 ? 'bg-emerald-500' : score >= 40 ? 'bg-[#b4a7d6]' : 'bg-[#ca4754]'
   const hasFactors = factors.length > 0
 
   useEffect(() => {
@@ -34,7 +35,7 @@ export function ScoreBar({ label, score, max = 100, factors = [] }: ScoreBarProp
       >
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="text-sm text-[#d1d0c5]">{label}</span>
+            <span className="text-base text-[#d1d0c5]">{label}</span>
             {hasFactors && (
               <svg
                 className={`h-3 w-3 text-[#646669] transition-transform duration-200 ease-out ${open ? 'rotate-90' : ''}`}
@@ -47,10 +48,12 @@ export function ScoreBar({ label, score, max = 100, factors = [] }: ScoreBarProp
               </svg>
             )}
           </div>
-          <span className="text-sm font-semibold text-[#d1d0c5]">{score}</span>
+          <span className="text-base font-semibold text-[#d1d0c5]">{hasScore ? score : 'N/A'}</span>
         </div>
-        <div className="h-2 rounded-full bg-[#3a3c3f] overflow-hidden">
-          <div className={`h-full rounded-full ${color}`} style={{ width: `${pct}%` }} />
+        <div className="h-2.5 rounded-full bg-[#3a3c3f] overflow-hidden">
+          {hasScore && (
+            <div className={`h-full rounded-full ${color}`} style={{ width: `${pct}%` }} />
+          )}
         </div>
       </button>
 
@@ -58,14 +61,14 @@ export function ScoreBar({ label, score, max = 100, factors = [] }: ScoreBarProp
         className="overflow-hidden transition-all duration-300 ease-out"
         style={{ maxHeight: open ? height : 0, opacity: open ? 1 : 0 }}
       >
-        <ul ref={contentRef} className="pt-3 pl-1 space-y-1.5">
+        <ul ref={contentRef} className="pt-3 pl-1 space-y-2">
           {factors.map((f, i) => (
-            <li key={i} className="flex items-center gap-2">
-              <span className={`h-1 w-1 rounded-full shrink-0 ${
+            <li key={i} className="flex items-center gap-2.5">
+              <span className={`h-1.5 w-1.5 rounded-full shrink-0 ${
                 f.impact === 'positive' ? 'bg-emerald-400' :
                 f.impact === 'negative' ? 'bg-[#ca4754]' : 'bg-[#646669]'
               }`} />
-              <span className="text-xs text-[#646669]">{f.label}</span>
+              <span className="text-sm text-[#646669]">{f.label}</span>
             </li>
           ))}
         </ul>

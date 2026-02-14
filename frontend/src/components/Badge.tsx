@@ -13,7 +13,7 @@ const variantStyles: Record<string, string> = {
 
 export function Badge({ label, variant = 'neutral' }: BadgeProps) {
   return (
-    <span className={`inline-block rounded-md px-2.5 py-1 text-xs font-medium ${variantStyles[variant]}`}>
+    <span className={`inline-block rounded-md px-3 py-1.5 text-sm font-medium ${variantStyles[variant]}`}>
       {label}
     </span>
   )

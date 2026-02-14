@@ -54,14 +54,14 @@ export function UrlInput({ size = 'default', defaultValue = '', onScan }: UrlInp
   }
 
   const inputClass = size === 'large'
-    ? 'flex-1 rounded-xl bg-[#2c2e31] border px-5 py-3.5 text-base text-[#d1d0c5] placeholder:text-[#646669] outline-none transition-colors focus:border-[#646669] focus:bg-[#2c2e31]'
-    : 'flex-1 rounded-xl bg-[#323437] border px-4 py-2 text-sm text-[#d1d0c5] placeholder:text-[#646669] outline-none transition-colors focus:border-[#646669] focus:bg-[#2c2e31]'
+    ? 'flex-1 rounded-xl bg-[#2c2e31] border px-6 py-4 text-lg text-[#d1d0c5] placeholder:text-[#646669] outline-none transition-colors focus:border-[#646669] focus:bg-[#2c2e31]'
+    : 'flex-1 rounded-xl bg-[#323437] border px-5 py-3 text-base text-[#d1d0c5] placeholder:text-[#646669] outline-none transition-colors focus:border-[#646669] focus:bg-[#2c2e31]'
 
   const borderColor = error ? 'border-[#ca4754]' : 'border-[#3a3c3f]'
 
   const buttonClass = size === 'large'
-    ? 'shrink-0 rounded-xl bg-[#8b7ab8] px-7 py-3.5 text-base font-medium text-white transition-colors hover:bg-[#7466a3] cursor-pointer'
-    : 'shrink-0 rounded-xl bg-[#8b7ab8] px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-[#7466a3] cursor-pointer'
+    ? 'shrink-0 rounded-xl bg-[#8b7ab8] px-8 py-4 text-lg font-medium text-white transition-colors hover:bg-[#7466a3] cursor-pointer'
+    : 'shrink-0 rounded-xl bg-[#8b7ab8] px-6 py-3 text-base font-medium text-white transition-colors hover:bg-[#7466a3] cursor-pointer'
 
   return (
     <div>
@@ -79,7 +79,7 @@ export function UrlInput({ size = 'default', defaultValue = '', onScan }: UrlInp
         </button>
       </div>
       {error && (
-        <p className="mt-1.5 text-xs text-[#ca4754] pl-1">{error}</p>
+        <p className="mt-2 text-sm text-[#ca4754] pl-1">{error}</p>
       )}
     </div>
   )
