@@ -6,9 +6,11 @@
   --color-mt-bg-secondary: #2c2e31;
   --color-mt-text: #d1d0c5;
   --color-mt-sub: #646669;
-  --color-mt-accent: #b4a7d6;
+  --color-mt-accent: #8b7ab8;
+  --color-mt-accent-hover: #7466a3;
   --color-mt-error: #ca4754;
   --color-mt-error-dark: #7e2a33;
+  --color-mt-border: #3a3c3f;
 }
 
 body {
