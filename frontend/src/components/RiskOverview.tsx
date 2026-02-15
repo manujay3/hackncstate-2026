@@ -89,11 +89,11 @@ function InfoTooltip({ text }: { text: string }) {
         </svg>
       </button>
       {show && (
-        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-56 rounded-lg bg-[#0c0d0f] border border-[#1f2024] px-3 py-2 shadow-2xl z-[100]">
-          <p className="text-xs text-[#a1a1aa] leading-relaxed">{text}</p>
-          <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-px">
-            <div className="border-4 border-transparent border-t-[#1f2024]" />
+        <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-56 rounded-lg bg-[#0c0d0f] border border-[#1f2024] px-3 py-2 shadow-2xl z-[200]">
+          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-[-1px]">
+            <div className="border-4 border-transparent border-b-[#1f2024]" />
           </div>
+          <p className="text-xs text-[#a1a1aa] leading-relaxed">{text}</p>
         </div>
       )}
     </div>
