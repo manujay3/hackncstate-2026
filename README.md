@@ -1,4 +1,4 @@
-# Built for HacknNCState-2026
+# Built for HackNCState-2026
 
 <img width="333" height="222" alt="image" src="https://github.com/user-attachments/assets/bcb4a0cc-90d6-472c-bad2-60642eb3ec10" />
 
