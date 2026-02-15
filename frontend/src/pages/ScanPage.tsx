@@ -129,7 +129,7 @@ export function ScanPage() {
   ]
 
   return (
-    <div className="min-h-screen relative flex flex-col">
+    <div className="min-h-screen relative flex flex-col" style={{ background: 'radial-gradient(ellipse at center, #1a1b1f 0%, #0c0d0f 70%)' }}>
       {/* Hero text — fades out when scanned */}
       <div
         className="fixed inset-0 flex items-center justify-center px-6 pointer-events-none transition-all duration-500 ease-out"

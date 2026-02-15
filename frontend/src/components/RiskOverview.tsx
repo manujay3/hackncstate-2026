@@ -111,6 +111,9 @@ function buildTags(
     tags.push({ label: signals.ssl ? 'HTTPS' : 'No HTTPS', variant: signals.ssl ? 'green' : 'red' })
     tags.push({ label: signals.hasLoginForm ? 'Login Form' : 'No Login Form', variant: signals.hasLoginForm ? 'yellow' : 'neutral' })
     tags.push({ label: `${signals.thirdPartyScriptsCount} Scripts`, variant: signals.thirdPartyScriptsCount > 10 ? 'red' : signals.thirdPartyScriptsCount > 5 ? 'yellow' : 'neutral' })
+    if (!signals.hasPrivacyLink) {
+      tags.push({ label: 'No Privacy Policy', variant: 'red' })
+    }
   }
 
   if (whois?.tld) {

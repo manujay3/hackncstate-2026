@@ -21,7 +21,7 @@ export function ScoreRing({ score, max = 100, size = 140, label }: ScoreRingProp
 
   return (
     <div className="flex flex-col items-center gap-2">
-      <div className="relative" style={{ width: size, height: size }}>
+      <div className="relative" style={{ width: size, height: size, overflow: 'hidden', borderRadius: '50%' }}>
         <svg width={size} height={size} className="-rotate-90">
           <circle
             cx={size / 2}
