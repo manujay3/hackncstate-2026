@@ -22,6 +22,7 @@ export interface ScanResult {
     score: number;
     tier: "LOW" | "MEDIUM" | "HIGH";
     reasons: string[];
+    reasoning: string | null;
   };
   whois: {
     domainName: string;

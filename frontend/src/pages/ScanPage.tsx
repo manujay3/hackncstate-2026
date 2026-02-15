@@ -230,6 +230,7 @@ export function ScanPage() {
                 score={scanResult?.risk.score}
                 tier={scanResult?.risk.tier}
                 reasons={scanResult?.risk.reasons}
+                reasoning={scanResult?.risk.reasoning}
                 signals={scanResult?.signals}
                 whois={scanResult?.whois}
                 safeBrowsing={scanResult?.safeBrowsing}

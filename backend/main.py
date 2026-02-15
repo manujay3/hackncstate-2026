@@ -5,6 +5,9 @@ import tempfile
 from datetime import datetime
 from urllib.parse import urlparse
 
+import json
+import logging
+import re
 import requests
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
@@ -170,6 +173,82 @@ def extract_safe_browsing_data(response_json: dict) -> dict:
     return {"is_flagged": True, "threat_types": threat_types}
 
 
+def ask_gemini_for_score(
+    url: str,
+    final_url: str,
+    whois_data: dict | None,
+    safe_browsing: dict,
+    pagerank_data: dict | None,
+    signals: dict,
+) -> dict:
+    """Send all API data to Gemini and get a final risk score + reasoning."""
+    api_key = os.environ.get("GEMINI_API", "")
+    if not api_key:
+        return {"score": None, "tier": None, "reasoning": None}
+
+    prompt = f"""You are a cybersecurity analyst evaluating the safety of a website. Based on the data below, produce a final risk assessment.
+
+URL submitted: {url}
+Final URL after redirects: {final_url}
+
+=== WHOIS Data ===
+{json.dumps(whois_data, indent=2) if whois_data else "Not available"}
+
+=== Google Safe Browsing ===
+Flagged: {safe_browsing.get("is_flagged", False)}
+Threat types: {", ".join(safe_browsing.get("threat_types", [])) or "None"}
+
+=== OpenPageRank ===
+{json.dumps(pagerank_data, indent=2) if pagerank_data else "Not available"}
+
+=== Page Signals ===
+SSL/TLS: {signals.get("ssl", False)}
+Has login form: {signals.get("hasLoginForm", False)}
+Third-party scripts count: {signals.get("thirdPartyScriptsCount", 0)}
+Has privacy policy: {signals.get("hasPrivacyLink", False)}
+
+Instructions:
+1. Provide a risk score from 0 to 100 where 0 is extremely dangerous and 100 is very safe.
+2. Provide a tier: "HIGH" (score 61-100), "MEDIUM" (score 31-60), or "LOW" (score 0-30).
+3. Provide exactly 2 sentences explaining your reasoning in plain English for a non-technical user.
+
+Respond ONLY in this exact JSON format with no other text:
+{{"score": <number>, "tier": "<LOW|MEDIUM|HIGH>", "reasoning": "<2 sentences>"}}"""
+
+    try:
+        resp = requests.post(
+            f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={api_key}",
+            json={
+                "contents": [{"parts": [{"text": prompt}]}],
+                "generationConfig": {"temperature": 0.2},
+            },
+            timeout=30,
+        )
+        resp.raise_for_status()
+        result = resp.json()
+        text = result["candidates"][0]["content"]["parts"][0]["text"].strip()
+        logging.info(f"Gemini raw response: {text}")
+        # Strip markdown code fences if present
+        json_match = re.search(r'\{[^{}]*"score"[^{}]*\}', text, re.DOTALL)
+        if json_match:
+            text = json_match.group(0)
+        else:
+            # Try stripping code fences
+            text = re.sub(r'^```\w*\n?', '', text)
+            text = re.sub(r'\n?```$', '', text)
+            text = text.strip()
+        parsed = json.loads(text)
+        score = int(parsed["score"])
+        tier = str(parsed.get("tier", "")).upper()
+        reasoning = str(parsed.get("reasoning", ""))
+        if tier not in ("LOW", "MEDIUM", "HIGH"):
+            tier = "HIGH" if score >= 61 else "MEDIUM" if score >= 31 else "LOW"
+        return {"score": min(max(score, 0), 100), "tier": tier, "reasoning": reasoning}
+    except Exception as e:
+        logging.error(f"Gemini API error: {e}")
+        return {"score": None, "tier": None, "reasoning": None}
+
+
 def compute_risk(agent_data: dict, url: str) -> dict:
     """Simple heuristic risk scoring based on agent scan data."""
     score = 0
@@ -317,6 +396,27 @@ async def preview(req: PreviewRequest):
 
     # Google Safe Browsing lookup
     safe_browsing = fetch_safe_browsing(final_url)
+
+    # Gemini AI risk assessment
+    signals_for_gemini = {
+        "ssl": ssl,
+        "hasLoginForm": has_login_form,
+        "thirdPartyScriptsCount": len(third_party_scripts),
+        "hasPrivacyLink": has_privacy,
+    }
+    gemini_risk = ask_gemini_for_score(
+        url, final_url, whois_data, safe_browsing, pagerank_data, signals_for_gemini
+    )
+    # Use Gemini score if available, fall back to heuristic
+    if gemini_risk["score"] is not None:
+        risk = {
+            "score": gemini_risk["score"],
+            "tier": gemini_risk["tier"],
+            "reasons": risk["reasons"],
+            "reasoning": gemini_risk["reasoning"],
+        }
+    else:
+        risk["reasoning"] = None
 
     return {
         "ok": True,

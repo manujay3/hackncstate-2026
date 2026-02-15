@@ -11,7 +11,7 @@ export function ScoreRing({ score, max = 100, size = 140, label }: ScoreRingProp
   const circumference = 2 * Math.PI * radius
   const hasScore = score != null
   const progress = hasScore ? (score / max) * circumference : 0
-  const color = !hasScore ? '#3a3c3f' : score <= 30 ? '#22c55e' : score <= 60 ? '#eab308' : '#ca4754'
+  const color = !hasScore ? '#3a3c3f' : score >= 61 ? '#22c55e' : score >= 31 ? '#eab308' : '#ca4754'
 
   return (
     <div className="flex flex-col items-center gap-2">

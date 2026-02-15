@@ -27,6 +27,7 @@ interface RiskOverviewProps {
   score?: number
   tier?: 'LOW' | 'MEDIUM' | 'HIGH'
   reasons?: string[]
+  reasoning?: string | null
   signals?: {
     ssl: boolean
     hasPrivacyLink: boolean
@@ -40,9 +41,9 @@ interface RiskOverviewProps {
 
 function tierToBadge(tier: string): { label: string; variant: 'green' | 'accent' | 'red' } {
   switch (tier) {
-    case 'LOW': return { label: 'Safe', variant: 'green' }
+    case 'HIGH': return { label: 'Safe', variant: 'green' }
     case 'MEDIUM': return { label: 'Suspicious', variant: 'accent' }
-    case 'HIGH': return { label: 'Dangerous', variant: 'red' }
+    case 'LOW': return { label: 'Dangerous', variant: 'red' }
     default: return { label: 'Unknown', variant: 'accent' }
   }
 }
@@ -119,7 +120,7 @@ function ThreatDropdown({ level, factors }: { level: string | null; factors: { l
   )
 }
 
-export function RiskOverview({ score, tier, reasons, signals, whois, safeBrowsing, pageRank }: RiskOverviewProps) {
+export function RiskOverview({ score, tier, reasons, reasoning, signals, whois, safeBrowsing, pageRank }: RiskOverviewProps) {
   const hasData = score !== undefined && tier !== undefined
 
   const badge = hasData ? tierToBadge(tier!) : null
@@ -154,9 +155,11 @@ export function RiskOverview({ score, tier, reasons, signals, whois, safeBrowsin
   const privacyScore = signals ? (signals.hasPrivacyLink ? 70 : 30) : undefined
   const domainScore = hasData ? 50 : undefined
 
-  const description = hasData && reasons && reasons.length > 0
-    ? reasons.join('. ') + '.'
-    : 'N/A'
+  const description = reasoning
+    ? reasoning
+    : hasData && reasons && reasons.length > 0
+      ? reasons.join('. ') + '.'
+      : 'N/A'
 
   const badgeReasons = hasData && reasons
     ? reasons.slice(0, 3)
