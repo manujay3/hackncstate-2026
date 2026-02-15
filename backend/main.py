@@ -208,12 +208,13 @@ Third-party scripts count: {signals.get("thirdPartyScriptsCount", 0)}
 Has privacy policy: {signals.get("hasPrivacyLink", False)}
 
 Instructions:
-1. Provide a risk score from 0 to 100 where 0 is extremely dangerous and 100 is very safe.
+1. Provide an overall safety score from 0 to 100 where 0 is extremely dangerous and 100 is very safe.
 2. Provide a tier: "HIGH" (score 61-100), "MEDIUM" (score 31-60), or "LOW" (score 0-30).
 3. Provide exactly 2 sentences explaining your reasoning in plain English for a non-technical user.
+4. Provide a domain trust score from 0 to 100 based on the WHOIS data, domain age, registrar reputation, and privacy policy presence. 100 means highly trustworthy domain.
 
 Respond ONLY in this exact JSON format with no other text:
-{{"score": <number>, "tier": "<LOW|MEDIUM|HIGH>", "reasoning": "<2 sentences>"}}"""
+{{"score": <number>, "tier": "<LOW|MEDIUM|HIGH>", "reasoning": "<2 sentences>", "domainTrustScore": <number>}}"""
 
     try:
         resp = requests.post(
@@ -241,12 +242,131 @@ Respond ONLY in this exact JSON format with no other text:
         score = int(parsed["score"])
         tier = str(parsed.get("tier", "")).upper()
         reasoning = str(parsed.get("reasoning", ""))
+        domain_trust = parsed.get("domainTrustScore")
+        domain_trust = int(domain_trust) if domain_trust is not None else None
         if tier not in ("LOW", "MEDIUM", "HIGH"):
             tier = "HIGH" if score >= 61 else "MEDIUM" if score >= 31 else "LOW"
-        return {"score": min(max(score, 0), 100), "tier": tier, "reasoning": reasoning}
+        return {
+            "score": min(max(score, 0), 100),
+            "tier": tier,
+            "reasoning": reasoning,
+            "domainTrustScore": min(max(domain_trust, 0), 100) if domain_trust is not None else None,
+        }
     except Exception as e:
         logging.error(f"Gemini API error: {e}")
-        return {"score": None, "tier": None, "reasoning": None}
+        return {"score": None, "tier": None, "reasoning": None, "domainTrustScore": None}
+
+
+def ask_gemini_site_summary(url: str, final_url: str, html_snippet: str) -> str | None:
+    """Ask Gemini for a concise summary of what the website/company does."""
+    api_key = os.environ.get("GEMINI_API", "")
+    if not api_key:
+        return None
+
+    prompt = f"""You are summarizing a website for a non-technical user. Based on the URL and HTML content below, write a concise 2-3 sentence summary describing what this company, product, or service is and what they do.
+
+URL: {url}
+Final URL: {final_url}
+
+HTML content (first 3000 chars):
+{html_snippet[:3000]}
+
+Respond with ONLY the summary text, no formatting, no quotes, no markdown."""
+
+    try:
+        resp = requests.post(
+            f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={api_key}",
+            json={
+                "contents": [{"parts": [{"text": prompt}]}],
+                "generationConfig": {"temperature": 0.3, "maxOutputTokens": 200},
+            },
+            timeout=20,
+        )
+        resp.raise_for_status()
+        result = resp.json()
+        text = result["candidates"][0]["content"]["parts"][0]["text"].strip()
+        return text
+    except Exception as e:
+        logging.error(f"Gemini site summary error: {e}")
+        return None
+
+
+def ask_gemini_image_caption(screenshot_b64: str) -> str | None:
+    """Ask Gemini to describe the screenshot for an accessible caption."""
+    api_key = os.environ.get("GEMINI_API", "")
+    if not api_key or not screenshot_b64:
+        return None
+
+    prompt = "Describe this website screenshot in one concise sentence for someone who cannot see the image. Focus on the main content and layout visible on the page."
+
+    try:
+        resp = requests.post(
+            f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={api_key}",
+            json={
+                "contents": [{
+                    "parts": [
+                        {"text": prompt},
+                        {
+                            "inline_data": {
+                                "mime_type": "image/png",
+                                "data": screenshot_b64,
+                            }
+                        },
+                    ]
+                }],
+                "generationConfig": {"temperature": 0.3, "maxOutputTokens": 150},
+            },
+            timeout=25,
+        )
+        resp.raise_for_status()
+        result = resp.json()
+        text = result["candidates"][0]["content"]["parts"][0]["text"].strip()
+        return text
+    except Exception as e:
+        logging.error(f"Gemini image caption error: {e}")
+        return None
+
+
+def ask_gemini_privacy_analysis(privacy_text: str, privacy_link: str | None) -> dict | None:
+    """Ask Gemini for a concise privacy policy summary and key phrases to highlight."""
+    api_key = os.environ.get("GEMINI_API", "")
+    if not api_key or not privacy_text:
+        return None
+
+    prompt = f"""You are a privacy policy analyst. Analyze the privacy policy text below and provide:
+
+1. A concise 2-3 sentence summary of the privacy policy written in plain English for a non-technical user. Focus on what data is collected, how it's used, and whether it's shared with third parties.
+2. Exactly 3 short key phrases or clauses from the policy that users should pay attention to. These should be concise exact quotes (under 15 words each) from the policy that are noteworthy, concerning, or important.
+
+Privacy policy text:
+{privacy_text[:4000]}
+
+Respond ONLY in this exact JSON format:
+{{"summary": "<2-3 sentence summary>", "highlights": ["<short key phrase 1>", "<short key phrase 2>", "<short key phrase 3>"]}}"""
+
+    try:
+        resp = requests.post(
+            f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={api_key}",
+            json={
+                "contents": [{"parts": [{"text": prompt}]}],
+                "generationConfig": {"temperature": 0.2, "maxOutputTokens": 500},
+            },
+            timeout=25,
+        )
+        resp.raise_for_status()
+        result = resp.json()
+        text = result["candidates"][0]["content"]["parts"][0]["text"].strip()
+        json_match = re.search(r'\{.*\}', text, re.DOTALL)
+        if json_match:
+            text = json_match.group(0)
+        parsed = json.loads(text)
+        return {
+            "summary": str(parsed.get("summary", "")),
+            "highlights": list(parsed.get("highlights", [])),
+        }
+    except Exception as e:
+        logging.error(f"Gemini privacy analysis error: {e}")
+        return None
 
 
 def compute_risk(agent_data: dict, url: str) -> dict:
@@ -414,9 +534,21 @@ async def preview(req: PreviewRequest):
             "tier": gemini_risk["tier"],
             "reasons": risk["reasons"],
             "reasoning": gemini_risk["reasoning"],
+            "domainTrustScore": gemini_risk["domainTrustScore"],
         }
     else:
         risk["reasoning"] = None
+        risk["domainTrustScore"] = None
+
+    # Gemini AI site summary and image caption
+    html_raw = data.get("html", "")
+    ai_summary = ask_gemini_site_summary(url, final_url, html_raw)
+    ai_caption = ask_gemini_image_caption(screenshot_b64)
+
+    # Gemini privacy policy analysis
+    privacy_text = (privacy.get("text") or "") if privacy else ""
+    privacy_link_val = privacy.get("link") if privacy else None
+    privacy_analysis = ask_gemini_privacy_analysis(privacy_text, privacy_link_val)
 
     return {
         "ok": True,
@@ -440,4 +572,7 @@ async def preview(req: PreviewRequest):
         "whois": whois_data,
         "safeBrowsing": safe_browsing,
         "pageRank": pagerank_data,
+        "aiSummary": ai_summary,
+        "aiCaption": ai_caption,
+        "privacyAnalysis": privacy_analysis,
     }

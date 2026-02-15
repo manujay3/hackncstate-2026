@@ -24,30 +24,30 @@ export function ScreenshotPanel({ screenshotBase64, caption, aiSummary }: Screen
     <>
       {/* AI Summary */}
       <SectionContainer title="AI Summary" icon={summaryIcon}>
-        <p className="text-base text-[#646669]">
+        <p className="text-base text-[#e4e4e7] leading-relaxed">
           {aiSummary ?? 'N/A'}
         </p>
       </SectionContainer>
 
-      <div className="h-px bg-[#2c2e31]" />
+      <div className="h-px bg-[#1f2024]" />
 
       {/* Page Snapshot */}
       <SectionContainer title="Page Snapshot" icon={snapshotIcon}>
         {screenshotBase64 ? (
           <>
-            <div className="rounded-lg border border-[#3a3c3f] bg-[#2c2e31] overflow-hidden">
+            <div className="rounded-lg border border-[#1f2024] bg-[#0c0d0f] overflow-hidden">
               <img
                 src={`data:image/png;base64,${screenshotBase64}`}
                 alt="Page screenshot"
                 className="w-full"
               />
             </div>
-            <p className="mt-3 text-sm text-[#646669]">
+            <p className="mt-3 text-sm text-[#a1a1aa] leading-relaxed">
               {caption ?? 'N/A'}
             </p>
           </>
         ) : (
-          <p className="text-base text-[#646669]">N/A</p>
+          <p className="text-sm text-[#71717a]">N/A</p>
         )}
       </SectionContainer>
     </>

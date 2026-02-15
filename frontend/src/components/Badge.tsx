@@ -4,11 +4,11 @@ interface BadgeProps {
 }
 
 const variantStyles: Record<string, string> = {
-  neutral: 'bg-[#3a3c3f] text-[#646669]',
-  green: 'bg-emerald-900/30 text-emerald-400',
-  yellow: 'bg-[#b4a7d6]/15 text-[#b4a7d6]',
-  accent: 'bg-[#b4a7d6]/15 text-[#b4a7d6]',
-  red: 'bg-[#ca4754]/15 text-[#ca4754]',
+  neutral: 'bg-white/[0.06] text-[#a1a1aa]',
+  green: 'bg-[#34d399]/10 text-[#34d399]',
+  yellow: 'bg-[#fbbf24]/10 text-[#fbbf24]',
+  accent: 'bg-[#fbbf24]/10 text-[#fbbf24]',
+  red: 'bg-[#f87171]/10 text-[#f87171]',
 }
 
 export function Badge({ label, variant = 'neutral' }: BadgeProps) {

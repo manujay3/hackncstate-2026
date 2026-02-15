@@ -30,19 +30,19 @@ export function SecuritySignals({ signals }: SecuritySignalsProps) {
       {items ? (
         <ul className="space-y-3">
           {items.map((s, i) => (
-            <li key={i} className="flex items-center gap-3 text-base">
-              <span className={`h-2 w-2 rounded-full ${s.detected ? 'bg-[#ca4754]' : 'bg-[#3a3c3f]'}`} />
-              <span className={s.detected ? 'text-[#d1d0c5]' : 'text-[#646669]'}>
+            <li key={i} className="flex items-center gap-3 text-sm">
+              <span className={`h-2 w-2 rounded-full ${s.detected ? 'bg-[#f87171]' : 'bg-[#1f2024]'}`} />
+              <span className={s.detected ? 'text-[#e4e4e7]' : 'text-[#71717a]'}>
                 {s.label}
               </span>
               {s.detected && (
-                <span className="text-sm text-[#ca4754] font-medium">Detected</span>
+                <span className="text-sm text-[#f87171] font-medium">Detected</span>
               )}
             </li>
           ))}
         </ul>
       ) : (
-        <p className="text-base text-[#646669]">N/A</p>
+        <p className="text-sm text-[#71717a]">N/A</p>
       )}
     </SectionContainer>
   )

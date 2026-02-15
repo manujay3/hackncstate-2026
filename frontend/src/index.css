@@ -2,13 +2,13 @@
 
 @theme {
   --font-sans: "Lexend Deca", ui-sans-serif, system-ui, -apple-system, sans-serif;
-  --color-mt-bg: #323437;
-  --color-mt-bg-secondary: #2c2e31;
-  --color-mt-text: #d1d0c5;
-  --color-mt-sub: #646669;
-  --color-mt-accent: #b4a7d6;
-  --color-mt-error: #ca4754;
-  --color-mt-error-dark: #7e2a33;
+  --color-mt-bg: #0c0d0f;
+  --color-mt-bg-secondary: #151619;
+  --color-mt-text: #e4e4e7;
+  --color-mt-sub: #71717a;
+  --color-mt-accent: #a78bfa;
+  --color-mt-error: #f87171;
+  --color-mt-error-dark: #7f1d1d;
 }
 
 body {

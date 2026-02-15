@@ -24,7 +24,7 @@ export function PrivacyAnalytics({ thirdPartyScriptsCount, hasPrivacyLink }: Pri
           <MetricItem label="Privacy policy" value={hasPrivacyLink ? 'Found' : 'Not found'} />
         </div>
       ) : (
-        <p className="text-base text-[#646669]">N/A</p>
+        <p className="text-base text-[#71717a]">N/A</p>
       )}
     </SectionContainer>
   )

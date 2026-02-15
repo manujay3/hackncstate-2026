@@ -81,7 +81,24 @@ export function ScanPage() {
     {
       label: 'Overview',
       icon: overviewIcon,
-      content: <ScreenshotPanel screenshotBase64={scanResult?.screenshotBase64} />,
+      content: (
+        <ScreenshotPanel
+          screenshotBase64={scanResult?.screenshotBase64}
+          aiSummary={scanResult?.aiSummary}
+          caption={scanResult?.aiCaption}
+        />
+      ),
+    },
+    {
+      label: 'Privacy Policy',
+      icon: privacyPolicyIcon,
+      content: (
+        <SemanticsPanel
+          privacySnippet={scanResult?.privacy.snippet}
+          privacyLink={scanResult?.privacy.link}
+          privacyAnalysis={scanResult?.privacyAnalysis}
+        />
+      ),
     },
     {
       label: 'Analytics',
@@ -89,14 +106,14 @@ export function ScanPage() {
       content: (
         <>
           <RedirectTimeline redirects={scanResult?.redirects} />
-          <div className="h-px bg-[#2c2e31]" />
+          <div className="h-px bg-[#1f2024]" />
           <SecuritySignals signals={scanResult?.signals} />
-          <div className="h-px bg-[#2c2e31]" />
+          <div className="h-px bg-[#1f2024]" />
           <PrivacyAnalytics
             thirdPartyScriptsCount={scanResult?.signals.thirdPartyScriptsCount}
             hasPrivacyLink={scanResult?.signals.hasPrivacyLink}
           />
-          <div className="h-px bg-[#2c2e31]" />
+          <div className="h-px bg-[#1f2024]" />
           <TechnicalDetails
             metadata={scanResult ? [
               { label: 'Final URL', value: scanResult.finalUrl },
@@ -109,20 +126,10 @@ export function ScanPage() {
         </>
       ),
     },
-    {
-      label: 'Privacy Policy',
-      icon: privacyPolicyIcon,
-      content: (
-        <SemanticsPanel
-          privacySnippet={scanResult?.privacy.snippet}
-          privacyLink={scanResult?.privacy.link}
-        />
-      ),
-    },
   ]
 
   return (
-    <div className="min-h-screen relative">
+    <div className="min-h-screen relative flex flex-col">
       {/* Hero text — fades out when scanned */}
       <div
         className="fixed inset-0 flex items-center justify-center px-6 pointer-events-none transition-all duration-500 ease-out"
@@ -131,22 +138,39 @@ export function ScanPage() {
           transform: scanned ? 'translateY(-40px)' : 'translateY(-70px)',
         }}
       >
-        <div className="text-center">
-          <div className="flex items-center justify-center gap-3 mb-4">
-            <img src="/logo.svg" alt="SafeLink" className="h-20 w-20" />
+        <div className="text-center max-w-2xl">
+          <div className="flex items-center justify-center gap-3 mb-6">
+            <img src="/logo.svg" alt="SafeLink" className="h-16 w-16" />
             <h1 className="text-5xl font-bold tracking-tight">
-              <span className="text-[#d1d0c5]">Safe</span><span className="text-[#8b7ab8]">Link</span>
+              <span className="text-white">Safe</span><span className="text-[#a78bfa]">Link</span>
             </h1>
           </div>
-          <p className="text-[#d1d0c5]/70 text-xl font-medium mb-4">
-            Not sure if a link is safe? Are you blindly accepting the Privacy Policy?
-            <br></br>We check them so you don&apos;t have to.
+          <p className="text-[#e4e4e7]/80 text-xl font-light mb-3 leading-relaxed">
+            Not sure if a link is safe? Blindly accepting privacy policies?
           </p>
-          <p className="text-[#646669] text-base leading-relaxed max-w-lg mx-auto">
-            We use <span className="text-[#8b7ab8]">AI</span> to safely open suspicious websites in a secure environment, detect
-            scams, and explain the risks in plain English so you
-            can <span className="font-black">browse with confidence</span>.
+          <p className="text-[#a78bfa] text-lg font-medium mb-8">
+            We check them so you don&apos;t have to.
           </p>
+          <div className="flex items-center justify-center gap-8 text-sm text-[#71717a]">
+            <div className="flex items-center gap-2">
+              <svg className="h-4 w-4 text-[#34d399]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+              </svg>
+              AI-Powered Analysis
+            </div>
+            <div className="flex items-center gap-2">
+              <svg className="h-4 w-4 text-[#34d399]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+              </svg>
+              Real-time Scanning
+            </div>
+            <div className="flex items-center gap-2">
+              <svg className="h-4 w-4 text-[#34d399]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+              </svg>
+              Privacy Insights
+            </div>
+          </div>
         </div>
       </div>
 
@@ -162,7 +186,7 @@ export function ScanPage() {
       >
         <div
           className="mx-auto transition-all duration-700 ease-[cubic-bezier(0.4,0,0.2,1)]"
-          style={{ maxWidth: scanned ? '1060px' : '720px' }}
+          style={{ maxWidth: scanned ? '1060px' : '640px' }}
         >
           <div
             className="mx-auto transition-all duration-700 ease-[cubic-bezier(0.4,0,0.2,1)]"
@@ -171,12 +195,14 @@ export function ScanPage() {
             <div
               className="transition-all duration-700 ease-[cubic-bezier(0.4,0,0.2,1)] rounded-2xl flex items-center"
               style={{
-                backgroundColor: scanned ? '#2c2e31' : 'transparent',
+                backgroundColor: scanned ? 'rgba(21, 22, 25, 0.97)' : 'transparent',
                 borderWidth: '1px',
                 borderStyle: 'solid',
-                borderColor: scanned ? '#3a3c3f' : 'transparent',
+                borderColor: scanned ? '#1f2024' : 'transparent',
                 padding: scanned ? '8px 16px' : '0px 0px',
                 gap: scanned ? '12px' : '0px',
+                boxShadow: scanned ? '0 8px 32px rgba(0, 0, 0, 0.5)' : 'none',
+                backdropFilter: scanned ? 'blur(12px)' : 'none',
               }}
             >
               {/* Brand — appears when docked */}
@@ -208,14 +234,14 @@ export function ScanPage() {
       {/* Results — fades and slides in */}
       {scanned && (
         <main
-          className="max-w-[1060px] mx-auto px-6 pt-24 pb-16 space-y-6 transition-all duration-500 ease-out"
+          className="flex-1 max-w-[1060px] mx-auto w-full px-6 pt-24 pb-8 space-y-6 transition-all duration-500 ease-out"
           style={{
             opacity: showResults ? 1 : 0,
             transform: showResults ? 'translateY(0)' : 'translateY(24px)',
           }}
         >
           {error && (
-            <div className="rounded-2xl border border-[#ca4754]/30 bg-[#ca4754]/10 p-4 text-base text-[#ca4754]">
+            <div className="rounded-2xl border border-[#f87171]/20 bg-[#f87171]/5 p-4 text-sm text-[#f87171]">
               {error}
             </div>
           )}
@@ -231,18 +257,33 @@ export function ScanPage() {
                 tier={scanResult?.risk.tier}
                 reasons={scanResult?.risk.reasons}
                 reasoning={scanResult?.risk.reasoning}
+                domainTrustScore={scanResult?.risk.domainTrustScore}
                 signals={scanResult?.signals}
                 whois={scanResult?.whois}
                 safeBrowsing={scanResult?.safeBrowsing}
                 pageRank={scanResult?.pageRank}
+                finalUrl={scanResult?.finalUrl}
               />
-              <div className="rounded-2xl border border-[#2c2e31] bg-[#2c2e31]/60 p-6 sm:p-8">
+              <div className="rounded-2xl border border-[#1f2024] bg-[#151619] p-6 sm:p-8">
                 <Tabs tabs={tabs} />
               </div>
             </>
           )}
         </main>
       )}
+
+      {/* Footer */}
+      <footer className="mt-auto border-t border-[#1f2024] py-6 px-6">
+        <div className="max-w-[1060px] mx-auto flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <img src="/logo.svg" alt="SafeLink" className="h-5 w-5 opacity-50" />
+            <span className="text-xs text-[#52525b]">SafeLink</span>
+          </div>
+          <p className="text-xs text-[#52525b]">
+            &copy; {new Date().getFullYear()} SafeLink. All rights reserved.
+          </p>
+        </div>
+      </footer>
     </div>
   )
 }

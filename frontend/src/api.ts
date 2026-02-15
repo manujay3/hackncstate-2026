@@ -23,6 +23,7 @@ export interface ScanResult {
     tier: "LOW" | "MEDIUM" | "HIGH";
     reasons: string[];
     reasoning: string | null;
+    domainTrustScore: number | null;
   };
   whois: {
     domainName: string;
@@ -40,6 +41,12 @@ export interface ScanResult {
     pageRankDecimal: number | null;
     pageRankInteger: number | null;
     rank: string | null;
+  } | null;
+  aiSummary: string | null;
+  aiCaption: string | null;
+  privacyAnalysis: {
+    summary: string;
+    highlights: string[];
   } | null;
 }
 

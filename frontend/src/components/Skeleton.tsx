@@ -5,14 +5,14 @@ interface SkeletonProps {
 export function Skeleton({ className = '' }: SkeletonProps) {
   return (
     <div
-      className={`rounded bg-[#3a3c3f] animate-pulse ${className}`}
+      className={`rounded bg-[#1f2024] animate-pulse ${className}`}
     />
   )
 }
 
 export function RiskOverviewSkeleton() {
   return (
-    <div className="rounded-2xl border border-[#2c2e31] bg-[#2c2e31]/60 p-6 sm:p-8">
+    <div className="rounded-2xl border border-[#1f2024] bg-[#151619] p-6 sm:p-8">
       {/* Header row */}
       <div className="flex items-center justify-between mb-8">
         <Skeleton className="h-5 w-32" />
@@ -40,13 +40,13 @@ export function RiskOverviewSkeleton() {
 
         {/* Right: score bars */}
         <div className="space-y-5">
-          {[1, 2, 3, 4].map((i) => (
+          {[1, 2, 3].map((i) => (
             <div key={i} className="space-y-2">
               <div className="flex items-center justify-between">
                 <Skeleton className="h-4 w-28" />
                 <Skeleton className="h-4 w-8" />
               </div>
-              <Skeleton className="h-2.5 w-full rounded-full" />
+              <Skeleton className="h-2 w-full rounded-full" />
             </div>
           ))}
         </div>
@@ -57,9 +57,9 @@ export function RiskOverviewSkeleton() {
 
 export function TabsPanelSkeleton() {
   return (
-    <div className="rounded-2xl border border-[#2c2e31] bg-[#2c2e31]/60 p-6 sm:p-8">
+    <div className="rounded-2xl border border-[#1f2024] bg-[#151619] p-6 sm:p-8">
       {/* Tab buttons */}
-      <div className="flex gap-1 border-b border-[#3a3c3f] pb-px mb-4">
+      <div className="flex gap-1 border-b border-[#1f2024] pb-px mb-4">
         <Skeleton className="h-5 w-24 my-3" />
         <Skeleton className="h-5 w-24 my-3 ml-4" />
         <Skeleton className="h-5 w-24 my-3 ml-4" />

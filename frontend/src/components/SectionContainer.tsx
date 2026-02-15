@@ -9,7 +9,7 @@ export function SectionContainer({ title, icon, children, className = '' }: Sect
   return (
     <section className={`py-8 ${className}`}>
       {title && (
-        <h2 className="flex items-center gap-2 text-base font-medium uppercase tracking-wider text-[#646669] mb-5">
+        <h2 className="flex items-center gap-2 text-sm font-medium uppercase tracking-widest text-[#71717a] mb-5">
           {icon}
           {title}
         </h2>

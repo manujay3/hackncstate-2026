@@ -18,7 +18,7 @@ export function ScoreBar({ label, score, max = 100, factors = [] }: ScoreBarProp
   const [height, setHeight] = useState(0)
   const hasScore = score != null
   const pct = hasScore ? Math.min((score / max) * 100, 100) : 0
-  const color = !hasScore ? 'bg-[#3a3c3f]' : score >= 70 ? 'bg-emerald-500' : score >= 40 ? 'bg-[#b4a7d6]' : 'bg-[#ca4754]'
+  const color = !hasScore ? 'bg-[#3a3c3f]' : score >= 61 ? 'bg-emerald-500' : score >= 31 ? 'bg-[#eab308]' : 'bg-[#ca4754]'
   const hasFactors = factors.length > 0
 
   useEffect(() => {
@@ -48,7 +48,7 @@ export function ScoreBar({ label, score, max = 100, factors = [] }: ScoreBarProp
               </svg>
             )}
           </div>
-          <span className="text-base font-semibold text-[#d1d0c5]">{hasScore ? score : 'N/A'}</span>
+          <span className={`text-base font-semibold ${!hasScore ? 'text-[#d1d0c5]' : score >= 61 ? 'text-emerald-400' : score >= 31 ? 'text-[#eab308]' : 'text-[#ca4754]'}`}>{hasScore ? score : 'N/A'}</span>
         </div>
         <div className="h-2.5 rounded-full bg-[#3a3c3f] overflow-hidden">
           {hasScore && (

@@ -54,14 +54,14 @@ export function UrlInput({ size = 'default', defaultValue = '', onScan }: UrlInp
   }
 
   const inputClass = size === 'large'
-    ? 'flex-1 rounded-xl bg-[#2c2e31] border px-6 py-4 text-lg text-[#d1d0c5] placeholder:text-[#646669] outline-none transition-colors focus:border-[#646669] focus:bg-[#2c2e31]'
-    : 'flex-1 rounded-xl bg-[#323437] border px-5 py-3 text-base text-[#d1d0c5] placeholder:text-[#646669] outline-none transition-colors focus:border-[#646669] focus:bg-[#2c2e31]'
+    ? 'flex-1 rounded-xl bg-[#151619] border px-6 py-4 text-lg text-[#e4e4e7] placeholder:text-[#52525b] outline-none transition-all focus:border-[#a78bfa]/40 focus:ring-1 focus:ring-[#a78bfa]/20'
+    : 'flex-1 rounded-xl bg-[#151619] border px-5 py-3 text-base text-[#e4e4e7] placeholder:text-[#52525b] outline-none transition-all focus:border-[#a78bfa]/40 focus:ring-1 focus:ring-[#a78bfa]/20'
 
-  const borderColor = error ? 'border-[#ca4754]' : 'border-[#3a3c3f]'
+  const borderColor = error ? 'border-[#f87171]/50' : 'border-[#1f2024]'
 
   const buttonClass = size === 'large'
-    ? 'shrink-0 rounded-xl bg-[#8b7ab8] px-8 py-4 text-lg font-medium text-white transition-colors hover:bg-[#7466a3] cursor-pointer'
-    : 'shrink-0 rounded-xl bg-[#8b7ab8] px-6 py-3 text-base font-medium text-white transition-colors hover:bg-[#7466a3] cursor-pointer'
+    ? 'shrink-0 rounded-xl bg-[#7c3aed] px-8 py-4 text-lg font-medium text-white transition-all hover:bg-[#8b5cf6] cursor-pointer'
+    : 'shrink-0 rounded-xl bg-[#7c3aed] px-6 py-3 text-base font-medium text-white transition-all hover:bg-[#8b5cf6] cursor-pointer'
 
   return (
     <div>
@@ -71,7 +71,7 @@ export function UrlInput({ size = 'default', defaultValue = '', onScan }: UrlInp
           value={url}
           onChange={handleChange}
           onKeyDown={handleKeyDown}
-          placeholder="Paste a URL to scan…"
+          placeholder="Paste a URL to scan..."
           className={`${inputClass} ${borderColor}`}
         />
         <button onClick={handleScan} className={buttonClass}>
@@ -79,7 +79,7 @@ export function UrlInput({ size = 'default', defaultValue = '', onScan }: UrlInp
         </button>
       </div>
       {error && (
-        <p className="mt-2 text-sm text-[#ca4754] pl-1">{error}</p>
+        <p className="mt-2 text-sm text-[#f87171] pl-1">{error}</p>
       )}
     </div>
   )

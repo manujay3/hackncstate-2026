@@ -77,7 +77,7 @@ export function ScanProgressModal({ visible }: ScanProgressModalProps) {
   return (
     <div className="fixed inset-0 z-40 flex items-center justify-center px-6 pointer-events-none">
       <div
-        className="w-[440px] rounded-2xl border border-[#3a3c3f] bg-[#232527] shadow-2xl shadow-black/50 overflow-hidden pointer-events-auto transition-all duration-500 ease-out"
+        className="w-[440px] rounded-2xl border border-[#1f2024] bg-[#151619] shadow-2xl shadow-black/60 overflow-hidden pointer-events-auto transition-all duration-500 ease-out"
         style={{
           opacity: visible ? 1 : 0,
           transform: visible ? 'translateY(0) scale(1)' : 'translateY(16px) scale(0.97)',
@@ -85,16 +85,16 @@ export function ScanProgressModal({ visible }: ScanProgressModalProps) {
       >
         {/* Header */}
         <div className="px-6 pt-6 pb-3 flex items-center gap-3">
-          <div className="h-2.5 w-2.5 rounded-full bg-[#8b7ab8] animate-pulse" />
-          <span className="text-sm font-medium uppercase tracking-wider text-[#646669]">
+          <div className="h-2.5 w-2.5 rounded-full bg-[#a78bfa] animate-pulse" />
+          <span className="text-xs font-medium uppercase tracking-widest text-[#71717a]">
             Scanning in progress
           </span>
         </div>
 
         {/* Progress bar */}
-        <div className="mx-6 h-1.5 rounded-full bg-[#3a3c3f] overflow-hidden">
+        <div className="mx-6 h-1.5 rounded-full bg-[#1f2024] overflow-hidden">
           <div
-            className="h-full rounded-full bg-[#8b7ab8] transition-all duration-700 ease-out"
+            className="h-full rounded-full bg-[#7c3aed] transition-all duration-700 ease-out"
             style={{ width: `${((currentStep + 1) / steps.length) * 100}%` }}
           />
         </div>
@@ -112,21 +112,21 @@ export function ScanProgressModal({ visible }: ScanProgressModalProps) {
               >
                 <div className="mt-0.5 shrink-0">
                   {status === 'done' ? (
-                    <svg className="h-4 w-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <svg className="h-4 w-4 text-[#34d399]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                     </svg>
                   ) : status === 'active' ? (
-                    <svg className="h-4 w-4 text-[#8b7ab8] animate-spin" fill="none" viewBox="0 0 24 24">
+                    <svg className="h-4 w-4 text-[#a78bfa] animate-spin" fill="none" viewBox="0 0 24 24">
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" />
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                     </svg>
                   ) : (
-                    <div className="h-4 w-4 rounded-full border border-[#646669]/40" />
+                    <div className="h-4 w-4 rounded-full border border-[#3f3f46]" />
                   )}
                 </div>
 
                 <span className={`text-sm leading-snug ${
-                  status === 'active' ? 'text-[#d1d0c5]' : 'text-[#646669]'
+                  status === 'active' ? 'text-[#e4e4e7]' : 'text-[#71717a]'
                 }`}>
                   {step.label}
                 </span>
@@ -136,17 +136,17 @@ export function ScanProgressModal({ visible }: ScanProgressModalProps) {
         </div>
 
         {/* Tip */}
-        <div className="mx-6 mb-6 mt-2 rounded-xl bg-[#8b7ab8]/10 border border-[#8b7ab8]/20 px-5 py-4">
+        <div className="mx-6 mb-6 mt-2 rounded-xl bg-[#a78bfa]/5 border border-[#a78bfa]/10 px-5 py-4">
           <div className="flex items-start gap-3">
-            <svg className="h-5 w-5 text-[#8b7ab8] shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+            <svg className="h-5 w-5 text-[#a78bfa] shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 18v-5.25m0 0a6.01 6.01 0 0 0 1.5-.189m-1.5.189a6.01 6.01 0 0 1-1.5-.189m3.75 7.478a12.06 12.06 0 0 1-4.5 0m3.75 2.383a14.406 14.406 0 0 1-3 0M14.25 18v-.192c0-.983.658-1.823 1.508-2.316a7.5 7.5 0 1 0-7.517 0c.85.493 1.509 1.333 1.509 2.316V18" />
             </svg>
             <div
               className="transition-opacity duration-300 ease-out"
               style={{ opacity: tipFade ? 1 : 0 }}
             >
-              <p className="text-xs font-semibold uppercase tracking-wider text-[#8b7ab8] mb-1.5">Did you know?</p>
-              <p className="text-sm text-[#d1d0c5]/80 leading-relaxed">
+              <p className="text-xs font-semibold uppercase tracking-widest text-[#a78bfa] mb-1.5">Did you know?</p>
+              <p className="text-sm text-[#a1a1aa] leading-relaxed">
                 {tips[tipIndex]}
               </p>
             </div>

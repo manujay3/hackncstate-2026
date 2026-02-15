@@ -15,15 +15,15 @@ export function Tabs({ tabs }: TabsProps) {
 
   return (
     <div>
-      <div className="flex gap-1 border-b border-[#3a3c3f]">
+      <div className="flex gap-1 border-b border-[#1f2024]">
         {tabs.map((tab, i) => (
           <button
             key={tab.label}
             onClick={() => setActive(i)}
-            className={`flex items-center gap-2 px-5 py-3 text-base font-medium transition-colors cursor-pointer ${
+            className={`flex items-center gap-2 px-5 py-3 text-sm font-medium transition-colors cursor-pointer ${
               active === i
-                ? 'text-[#b4a7d6] border-b-2 border-[#b4a7d6] -mb-px'
-                : 'text-[#646669] hover:text-[#d1d0c5]'
+                ? 'text-[#a78bfa] border-b-2 border-[#a78bfa] -mb-px'
+                : 'text-[#71717a] hover:text-[#e4e4e7]'
             }`}
           >
             {tab.icon}

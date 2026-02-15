@@ -22,7 +22,7 @@ export function RedirectTimeline({ redirects }: RedirectTimelineProps) {
   if (redirects && items && items.length === 0) {
     return (
       <SectionContainer title="Redirect Chain" icon={icon}>
-        <p className="text-base text-[#646669]">No redirects detected — direct navigation.</p>
+        <p className="text-base text-[#71717a]">No redirects detected — direct navigation.</p>
       </SectionContainer>
     )
   }
@@ -41,7 +41,7 @@ export function RedirectTimeline({ redirects }: RedirectTimelineProps) {
           ))}
         </div>
       ) : (
-        <p className="text-base text-[#646669]">N/A</p>
+        <p className="text-base text-[#71717a]">N/A</p>
       )}
     </SectionContainer>
   )
