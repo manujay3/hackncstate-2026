@@ -206,8 +206,8 @@ export function RiskOverview({ score, tier, reasons, signals, whois, safeBrowsin
               {credibilityScore != null ? credibilityScore : 'N/A'}
             </span>
           </div>
-          <ScoreBar label="Domain Trust" score={domainScore} factors={domainFactors} />
           <ThreatDropdown level={threatLevel} factors={threatFactors} />
+          <ScoreBar label="Domain Trust" score={domainScore} factors={domainFactors} />
           <ScoreBar label="Privacy" score={privacyScore} factors={privacyFactors} />
         </div>
       </div>

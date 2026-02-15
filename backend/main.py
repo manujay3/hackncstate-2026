@@ -187,14 +187,6 @@ def compute_risk(agent_data: dict, url: str) -> dict:
         score += 20
         reasons.append("No SSL/TLS encryption")
 
-    # Login form detection
-    has_login_form = any(
-        kw in html
-        for kw in ['type="password"', "type='password'", 'input type="email"', "login", "sign in"]
-    )
-    if has_login_form:
-        score += 15
-        reasons.append("Login/credential form detected")
 
     # Third-party scripts
     parsed_final = urlparse(final_url)

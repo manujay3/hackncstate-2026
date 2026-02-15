@@ -10,6 +10,7 @@ import { PrivacyAnalytics } from '../components/PrivacyAnalytics'
 import { TechnicalDetails } from '../components/TechnicalDetails'
 import { SemanticsPanel } from '../components/SemanticsPanel'
 import { RiskOverviewSkeleton, TabsPanelSkeleton } from '../components/Skeleton'
+import { ScanProgressModal } from '../components/ScanProgressModal'
 import { previewUrl, type ScanResult } from '../api'
 
 const snapshotIcon = (
@@ -139,11 +140,12 @@ export function ScanPage() {
             </h1>
           </div>
           <p className="text-[#d1d0c5]/70 text-xl font-medium mb-4">
-            Not sure if a link is safe? We check it so you don&apos;t have to.
+            Not sure if a link is safe? Are you blindly accepting the Privacy Policy?
+            <br></br>We check them so you don&apos;t have to.
           </p>
           <p className="text-[#646669] text-base leading-relaxed max-w-lg mx-auto">
             We use <span className="text-[#8b7ab8]">AI</span> to safely open suspicious websites in a secure environment, detect
-            scams and tracking, and explain the risks in plain English so you
+            scams, and explain the risks in plain English so you
             can <span className="font-black">browse with confidence</span>.
           </p>
         </div>
@@ -201,6 +203,8 @@ export function ScanPage() {
           </div>
         </div>
       </div>
+
+      <ScanProgressModal visible={loading} />
 
       {/* Results — fades and slides in */}
       {scanned && (
